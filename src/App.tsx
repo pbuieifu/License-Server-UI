@@ -1,4 +1,3 @@
-import React from "react";
 import { Context_Brain } from "./context/Context_Brain";
 
 const App = () => {
