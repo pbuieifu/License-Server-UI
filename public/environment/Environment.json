@@ -1,0 +1,143 @@
+{
+  "api": {},
+  "subscriber_content": {
+    "themes": [],
+    "app": {
+      "component_key": "app_router",
+      "enabled": true,
+      "content": {
+        "functions": {
+          "mount": ["function.environment.subscribe"],
+          "unmount": ["function.environment.unsubscribe"]
+        },
+        "children": [
+          {
+            "component_key": "page",
+            "enabled": true,
+            "content": {
+              "page_key": "Home",
+              "functions": {
+                "mount": [
+                  "function.testing.log.subscribe",
+                  "function.navigation.page.subscribe"
+                ],
+                "unmount": [
+                  "function.testing.log.unsubscribe",
+                  "function.navigation.page.unsubscribe"
+                ]
+              },
+              "children": [
+                {
+                  "component_key": "header",
+                  "enabled": true,
+                  "content": {}
+                },
+                {
+                  "component_key": "banner",
+                  "enabled": true,
+                  "content": {
+                    "children": [
+                      {
+                        "component_key": "page_title",
+                        "enabled": true,
+                        "content": {}
+                      }
+                    ]
+                  }
+                },
+                {
+                  "component_key": "container",
+                  "enabled": true,
+                  "content": {
+                    "css_key": "",
+                    "children": [
+                      {
+                        "component_key": "button",
+                        "enabled": true,
+                        "content": {
+                          "css_key": "Filled",
+                          "functions": {
+                            "on_click": ["function.testing.log.publish"]
+                          }
+                        }
+                      },
+                      {
+                        "component_key": "button",
+                        "enabled": true,
+                        "content": {
+                          "css_key": "Filled",
+                          "functions": {
+                            "on_click": [
+                              "function.navigation.page.publish_about"
+                            ]
+                          }
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "component_key": "footer",
+                  "enabled": true,
+                  "content": {}
+                }
+              ]
+            }
+          },
+          {
+            "component_key": "page",
+            "enabled": true,
+            "content": {
+              "page_key": "About",
+              "functions": {
+                "mount": ["function.navigation.page.subscribe"],
+                "unmount": ["function.navigation.page.unsubscribe"]
+              },
+              "children": [
+                {
+                  "component_key": "header",
+                  "enabled": true,
+                  "content": {}
+                },
+                {
+                  "component_key": "banner",
+                  "enabled": true,
+                  "content": {
+                    "children": [
+                      {
+                        "component_key": "page_title",
+                        "enabled": true,
+                        "content": {}
+                      },
+                      {
+                        "component_key": "button",
+                        "enabled": true,
+                        "content": {
+                          "css_key": "Filled",
+                          "functions": {
+                            "on_click": [
+                              "function.navigation.page.publish_home"
+                            ]
+                          }
+                        }
+                      }
+                    ]
+                  }
+                },
+
+                {
+                  "component_key": "footer",
+                  "enabled": true,
+                  "content": {}
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "modals": [],
+    "notices": [],
+    "assets": []
+  }
+}
