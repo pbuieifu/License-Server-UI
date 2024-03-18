@@ -54,9 +54,9 @@ const Component_Generic = ({
 }: Props_Component_Generic) => {
   const Component_Rendered = Component_Map[data.key_component];
   const handler_event_ref = useRef<Handler_Event>(new Handler_Event()).current;
-  const initializeComponent = async () => {
+
+  const initializeComponent = async () =>
     handler_event.adoptChild(handler_event_ref);
-  };
 
   useEffect(() => {
     initializeComponent();

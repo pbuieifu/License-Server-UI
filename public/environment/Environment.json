@@ -114,7 +114,15 @@
                 {
                   "key_component": "dashboard",
                   "enabled": true,
-                  "content": {}
+                  "content": {
+                    "functions": {
+                      "mount": [
+                        "function.dashboard.api.publish",
+                        "function.dashboard.api.subscribe"
+                      ],
+                      "unmount": ["function.dashboard.api.unsubscribe"]
+                    }
+                  }
                 },
                 {
                   "key_component": "footer",

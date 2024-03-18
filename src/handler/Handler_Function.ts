@@ -1,4 +1,5 @@
 import { Data_Component_Generic } from "../components/Component_Generic";
+import { Payload_API_Answer } from "./Handler_API";
 import { Payload_Error } from "./Handler_Error";
 import Handler_Event, { Key_Events } from "./Handler_Event";
 
@@ -101,8 +102,22 @@ export default class Handler_Function {
     }
   }
 
-  public extractDataFromResult(key: string, results: Payload_Result[]): any {
-    return results.find((result) => result.key_event_subscription[0] === key);
+  public extractDataFromResult(
+    key_event: string,
+    key_call: string,
+    results: Payload_Result[]
+  ): any {
+    if (results) {
+      const filteredByKeyEvent = results.filter(
+        (result) => result.key_event_subscription[0] === key_event
+      );
+
+      const resultWithKeyCall = filteredByKeyEvent.find(
+        (result) => result.key_event_subscription[1] === key_call
+      );
+
+      return resultWithKeyCall;
+    }
   }
 
   private generateMounts(
@@ -299,23 +314,29 @@ const map_function: Map_Function = {
       api: {
         subscribe: (payload: Payload_Function_Data) => {
           if (payload.handler_event)
-            payload.handler_event.subscribe("api_answer", (data: any) => {
-              if (payload.setResults)
-                payload.setResults({
-                  key_event_subscription: [payload.key_call],
-                  data: data,
-                });
-            });
+            payload.handler_event.subscribe(
+              "api_answer",
+              (data: Payload_API_Answer) => {
+                if (payload.setResults)
+                  payload.setResults({
+                    key_event_subscription: ["api_answer", data.key_call],
+                    data: data.data,
+                  });
+              }
+            );
         },
         unsubscribe: (payload: Payload_Function_Data) => {
           if (payload.handler_event)
-            payload.handler_event.unsubscribe("api_answer", (data: any) => {
-              if (payload.setResults)
-                payload.setResults({
-                  key_event_subscription: [payload.key_call],
-                  data: data,
-                });
-            });
+            payload.handler_event.unsubscribe(
+              "api_answer",
+              (data: Payload_API_Answer) => {
+                if (payload.setResults)
+                  payload.setResults({
+                    key_event_subscription: ["api_answer", data.key_call],
+                    data: data.data,
+                  });
+              }
+            );
         },
         publish: (payload: Payload_Function_Data) => {
           if (payload.handler_event)

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Props_Component_Generic } from "./Component_Generic";
 import Handler_Function, {
   Payload_Function,
@@ -10,7 +10,9 @@ export const Component_Footer = ({
   data,
   handler_event,
 }: Props_Component_Generic) => {
-  const key_call = `${data.key_component}${generateUniqueHash()}`;
+  const key_call = useRef<string>(
+    `${data.key_component}${generateUniqueHash()}`
+  ).current;
   const handler_function = new Handler_Function(handler_event, data);
   const [results, setResults] = useState<Payload_Result[]>([]);
   const [cleanUpFunctions, setCleanUpFunctions] = useState<Payload_Function[]>(

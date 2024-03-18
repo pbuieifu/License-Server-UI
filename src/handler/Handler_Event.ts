@@ -24,9 +24,10 @@ export default class Handler_Event {
   }
 
   private propagateSubscription(event: Key_Events): void {
-    this.handler_parent.subscribe(event, (data: any) => {
-      this.publishDown(event, data);
-    });
+    if (this.handler_parent)
+      this.handler_parent.subscribe(event, (data: any) => {
+        this.publishDown(event, data);
+      });
   }
 
   public subscribe(event: Key_Events, callback: Function): void {
@@ -55,9 +56,10 @@ export default class Handler_Event {
   }
 
   public publishDown(event: Key_Events, data: any): void {
-    this.handler_children.forEach((handler_event: Handler_Event) =>
-      handler_event.publish(event, data)
-    );
+    this.handler_children.forEach((handler_event: Handler_Event) => {
+      handler_event.publish(event, data);
+      handler_event.publishDown(event, data);
+    });
   }
 
   public publishUp(event: Key_Events, data: any): void {

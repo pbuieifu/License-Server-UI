@@ -17,6 +17,11 @@ export interface Payload_API_Call {
   data: any;
 }
 
+export interface Payload_API_Answer {
+  key_call: string;
+  data: any;
+}
+
 export default class Handler_API {
   private static instance: Handler_API;
   private handler_event: Handler_Event;
@@ -51,7 +56,6 @@ export default class Handler_API {
 
   private newCall(api_call: Payload_API_Call) {
     const function_api = this.API_MAP[api_call.key_api as Key_API_Types];
-
     if (function_api) {
       function_api.call(this, api_call);
     } else {
@@ -63,7 +67,7 @@ export default class Handler_API {
   }
 
   private newAnswer(payload: Payload_API_Call, answer: any) {
-    this.handler_event.publish("api_answer", {
+    this.handler_event.publishDown("api_answer", {
       key_call: payload.key_call,
       data: answer,
     });

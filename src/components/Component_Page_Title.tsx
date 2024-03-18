@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Handler_Function, {
   Payload_Function,
   Payload_Result,
@@ -11,7 +11,9 @@ export const Component_Page_Title = ({
   data,
   handler_event,
 }: Props_Component_Generic) => {
-  const key_call = `${data.key_component}${generateUniqueHash()}`;
+  const key_call = useRef<string>(
+    `${data.key_component}${generateUniqueHash()}`
+  ).current;
   const handler_function = new Handler_Function(handler_event, data);
   const [results, setResults] = useState<Payload_Result[]>([]);
   const [cleanUpFunctions, setCleanUpFunctions] = useState<Payload_Function[]>(
