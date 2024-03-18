@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
-import { Props_Component_Rendered } from "./Component_Generic";
-import { Payload_Function, Payload_Result } from "../handler/Handler_Function";
+import { Props_Component_Generic } from "./Component_Generic";
+import Handler_Function, {
+  Payload_Function,
+  Payload_Result,
+} from "../handler/Handler_Function";
 import generateUniqueHash from "../helper/generateUniqueHash";
 
 function generateRandomString(length: number) {
@@ -17,9 +20,9 @@ function generateRandomString(length: number) {
 export const Component_Button = ({
   data,
   handler_event,
-  handler_function,
-}: Props_Component_Rendered) => {
+}: Props_Component_Generic) => {
   const key_call = `${data.key_component}${generateUniqueHash()}`;
+  const handler_function = new Handler_Function(handler_event, data);
   const [results, setResults] = useState<Payload_Result[]>([]);
   const [cleanUpFunctions, setCleanUpFunctions] = useState<Payload_Function[]>(
     []
@@ -27,16 +30,15 @@ export const Component_Button = ({
   const [onClick, setOnClick] = useState<Payload_Function[]>([]);
 
   const handleClick = () => {
-    onClick.forEach((func) =>
+    onClick.forEach((func) => {
       func({
         handler_event: handler_event,
         key_call: func({
           handler_event: handler_event,
           key_call: key_call,
         }),
-        data: generateRandomString(10),
-      })
-    );
+      });
+    });
   };
 
   const initializeComponent = async () => {
@@ -67,7 +69,7 @@ export const Component_Button = ({
     return () => {
       cleanUp();
     };
-  }, []);
+  }, [data]);
 
   /*   useEffect(() => {
     console.log(results);

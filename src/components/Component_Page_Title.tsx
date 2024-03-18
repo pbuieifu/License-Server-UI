@@ -1,15 +1,18 @@
 import { useState, useEffect } from "react";
-import { Payload_Function, Payload_Result } from "../handler/Handler_Function";
+import Handler_Function, {
+  Payload_Function,
+  Payload_Result,
+} from "../handler/Handler_Function";
 import { Component_Display_HTML } from "./Component_Display_HTML";
-import { Props_Component_Rendered } from "./Component_Generic";
+import { Props_Component_Generic } from "./Component_Generic";
 import generateUniqueHash from "../helper/generateUniqueHash";
 
 export const Component_Page_Title = ({
   data,
   handler_event,
-  handler_function,
-}: Props_Component_Rendered) => {
+}: Props_Component_Generic) => {
   const key_call = `${data.key_component}${generateUniqueHash()}`;
+  const handler_function = new Handler_Function(handler_event, data);
   const [results, setResults] = useState<Payload_Result[]>([]);
   const [cleanUpFunctions, setCleanUpFunctions] = useState<Payload_Function[]>(
     []

@@ -12,13 +12,9 @@ import Handler_Function from "../handler/Handler_Function";
 import { Component_App_Router } from "./Component_App_Router";
 import { Component_Dashboard } from "./Component_Dashboard";
 
-interface Props_Component_Generic {
+export interface Props_Component_Generic {
   data: Data_Component_Generic;
   handler_event: Handler_Event;
-}
-
-export interface Props_Component_Rendered extends Props_Component_Generic {
-  handler_function: Handler_Function;
 }
 
 export interface Data_Component_Generic {
@@ -38,7 +34,7 @@ export interface Data_Component_Generic {
 
 const Component_Map: Record<
   string,
-  FunctionComponent<Props_Component_Rendered>
+  FunctionComponent<Props_Component_Generic>
 > = {
   app_router: Component_App_Router,
   banner: Component_Banner,
@@ -58,9 +54,6 @@ const Component_Generic = ({
 }: Props_Component_Generic) => {
   const Component_Rendered = Component_Map[data.key_component];
   const handler_event_ref = useRef<Handler_Event>(new Handler_Event()).current;
-  let new_function = new Handler_Function(handler_event_ref, data);
-  const handler_function_ref = useRef<Handler_Function>(new_function).current;
-
   const initializeComponent = async () => {
     handler_event.adoptChild(handler_event_ref);
   };
@@ -70,13 +63,7 @@ const Component_Generic = ({
   }, []);
 
   if (data.enabled && Component_Rendered) {
-    return (
-      <Component_Rendered
-        data={data}
-        handler_event={handler_event_ref}
-        handler_function={handler_function_ref}
-      />
-    );
+    return <Component_Rendered data={data} handler_event={handler_event_ref} />;
   }
 
   return <></>;

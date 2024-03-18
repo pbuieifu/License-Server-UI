@@ -97,34 +97,24 @@
                         "key_component": "page_title",
                         "enabled": true,
                         "content": {}
-                      },
-                      {
-                        "key_component": "button",
-                        "enabled": true,
-                        "content": {
-                          "css_key": "Filled",
-                          "functions": {
-                            "on_click": [
-                              "function.navigation.page.publish_home"
-                            ]
-                          }
-                        }
                       }
                     ]
                   }
                 },
                 {
-                  "key_component": "dashboard",
+                  "key_component": "button",
                   "enabled": true,
                   "content": {
+                    "css_key": "Filled",
                     "functions": {
-                      "mount": [
-                        "function.dashboard.api.publish",
-                        "function.dashboard.api.subscribe"
-                      ],
-                      "unmount": ["function.dashboard.api.unsubscribe"]
+                      "on_click": ["function.navigation.page.publish_home"]
                     }
                   }
+                },
+                {
+                  "key_component": "dashboard",
+                  "enabled": true,
+                  "content": {}
                 },
                 {
                   "key_component": "footer",

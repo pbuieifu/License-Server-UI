@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { Props_Component_Rendered } from "./Component_Generic";
-import { Payload_Function, Payload_Result } from "../handler/Handler_Function";
+import { Props_Component_Generic } from "./Component_Generic";
+import Handler_Function, {
+  Payload_Function,
+  Payload_Result,
+} from "../handler/Handler_Function";
 import generateUniqueHash from "../helper/generateUniqueHash";
 
 export const Component_Header = ({
   data,
   handler_event,
-  handler_function,
-}: Props_Component_Rendered) => {
+}: Props_Component_Generic) => {
   const key_call = `${data.key_component}${generateUniqueHash()}`;
+  const handler_function = new Handler_Function(handler_event, data);
   const [results, setResults] = useState<Payload_Result[]>([]);
   const [cleanUpFunctions, setCleanUpFunctions] = useState<Payload_Function[]>(
     []
