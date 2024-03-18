@@ -1,10 +1,33 @@
-import { useState, useEffect } from "react";
-import { Component_Display_HTML } from "./Component_Display_HTML";
+import React, { useEffect, useState } from "react";
 import { Props_Component_Rendered } from "./Component_Generic";
 import { Payload_Function, Payload_Result } from "../handler/Handler_Function";
 import generateUniqueHash from "../helper/generateUniqueHash";
 
-export const Component_Text = ({
+const user_preferences = {
+  columns: [
+    { column_key: "client", enabled: true },
+    { column_key: "product", enabled: true },
+    { column_key: "product_version", enabled: true },
+    { column_key: "module", enabled: true },
+    { column_key: "component", enabled: true },
+    { column_key: "status", enabled: true },
+    { column_key: "time_left", enabled: true },
+    { column_key: "action_required", enabled: true },
+  ],
+};
+const api_data = {};
+
+const Component_Header_Button = ({}) => {};
+const Component_Header = ({}) => {};
+
+const Component_Row_Button = ({}) => {};
+const Component_Row = ({}) => {};
+
+//on load get data from api
+//generate column buttons based on preference data
+//generate rows based on preference + api data
+
+export const Component_Dashboard = ({
   data,
   handler_event,
   handler_function,
@@ -20,7 +43,10 @@ export const Component_Text = ({
     onClick.forEach((func) =>
       func({
         handler_event: handler_event,
-        key_call: key_call,
+        key_call: func({
+          handler_event: handler_event,
+          key_call: key_call,
+        }),
       })
     );
   };
@@ -55,13 +81,17 @@ export const Component_Text = ({
     };
   }, []);
 
-  /*    useEffect(() => {
+  /*   useEffect(() => {
     console.log(results);
   }, [results]); */
 
   return (
-    <p data-component="Component_Text">
-      <Component_Display_HTML html={JSON.stringify(data)} />
-    </p>
+    <div
+      data-component="Component_Template"
+      data-css={data.content.css_key}
+      onClick={handleClick}
+    >
+      Component_Template
+    </div>
   );
 };

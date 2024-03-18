@@ -1,13 +1,10 @@
-import { useEffect, useState } from "react";
-import Generic_Component, {
-  Data_Component_Generic,
-  Props_Component_Rendered,
-} from "./Component_Generic";
+import { useState, useEffect } from "react";
 import { Payload_Function, Payload_Result } from "../handler/Handler_Function";
-import { useAppNavigate } from "./Component_App_Router";
+import { Component_Display_HTML } from "./Component_Display_HTML";
+import { Props_Component_Rendered } from "./Component_Generic";
 import generateUniqueHash from "../helper/generateUniqueHash";
 
-export const Component_Page = ({
+export const Component_Page_Title = ({
   data,
   handler_event,
   handler_function,
@@ -61,34 +58,13 @@ export const Component_Page = ({
     };
   }, []);
 
-  const navigate = useAppNavigate();
-
-  const navigateToPage = () => {
-    const result: Payload_Result = handler_function.extractDataFromResult(
-      "page_navigation",
-      results
-    );
-    if (result && result.data !== data.content.page_key)
-      navigate(`/${result.data}`);
-  };
-
-  useEffect(() => {
-    navigateToPage();
+  /*   useEffect(() => {
     console.log(results);
-  }, [results]);
+  }, [results]); */
 
   return (
-    <div data-component="Component_Page">
-      {data.content.children &&
-        data.content.children.map(
-          (component_data: Data_Component_Generic, index: number) => (
-            <Generic_Component
-              data={component_data}
-              handler_event={handler_event}
-              key={index}
-            />
-          )
-        )}
-    </div>
+    <h1 data-component="Component_Page_Title" data-css={data.content.css_key}>
+      <Component_Display_HTML html={JSON.stringify(data)} />
+    </h1>
   );
 };

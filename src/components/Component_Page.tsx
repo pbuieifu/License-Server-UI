@@ -1,20 +1,13 @@
 import { useEffect, useState } from "react";
-import { Props_Component_Rendered } from "./Component_Generic";
+import Generic_Component, {
+  Data_Component_Generic,
+  Props_Component_Rendered,
+} from "./Component_Generic";
 import { Payload_Function, Payload_Result } from "../handler/Handler_Function";
+import { useAppNavigate } from "./Component_App_Router";
 import generateUniqueHash from "../helper/generateUniqueHash";
 
-function generateRandomString(length: number) {
-  const characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  let result = "";
-  const charactersLength = characters.length;
-  for (let i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
-  return result;
-}
-
-export const Component_Button = ({
+export const Component_Page = ({
   data,
   handler_event,
   handler_function,
@@ -34,7 +27,6 @@ export const Component_Button = ({
           handler_event: handler_event,
           key_call: key_call,
         }),
-        data: generateRandomString(10),
       })
     );
   };
@@ -69,13 +61,34 @@ export const Component_Button = ({
     };
   }, []);
 
-  /*   useEffect(() => {
+  const navigate = useAppNavigate();
+
+  const navigateToPage = () => {
+    const result: Payload_Result = handler_function.extractDataFromResult(
+      "page_navigation",
+      results
+    );
+    if (result && result.data !== data.content.page_key)
+      navigate(`/${result.data}`);
+  };
+
+  useEffect(() => {
+    navigateToPage();
     console.log(results);
-  }, [results]); */
+  }, [results]);
 
   return (
-    <button data-component="Component_Button" onClick={handleClick}>
-      {JSON.stringify(data)}
-    </button>
+    <div data-component="Component_Page" data-css={data.content.css_key}>
+      {data.content.children &&
+        data.content.children.map(
+          (component_data: Data_Component_Generic, index: number) => (
+            <Generic_Component
+              data={component_data}
+              handler_event={handler_event}
+              key={index}
+            />
+          )
+        )}
+    </div>
   );
 };

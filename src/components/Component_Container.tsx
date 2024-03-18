@@ -1,10 +1,12 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import Component_Generic, {
+  Data_Component_Generic,
+  Props_Component_Rendered,
+} from "./Component_Generic";
 import { Payload_Function, Payload_Result } from "../handler/Handler_Function";
-import { Component_Display_HTML } from "./Component_Display_HTML";
-import { Props_Component_Rendered } from "./Component_Generic";
 import generateUniqueHash from "../helper/generateUniqueHash";
 
-export const Component_Page_Title = ({
+export const Component_Container = ({
   data,
   handler_event,
   handler_function,
@@ -63,8 +65,17 @@ export const Component_Page_Title = ({
   }, [results]); */
 
   return (
-    <h1 data-component="Component_Page_Title">
-      <Component_Display_HTML html={JSON.stringify(data)} />
-    </h1>
+    <div data-component="Component_Container" data-css={data.content.css_key}>
+      {data.content.children &&
+        data.content.children.map(
+          (component_data: Data_Component_Generic, index: number) => (
+            <Component_Generic
+              data={component_data}
+              handler_event={handler_event}
+              key={index}
+            />
+          )
+        )}
+    </div>
   );
 };

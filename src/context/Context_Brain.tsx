@@ -12,7 +12,7 @@ import Handler_Environment from "../handler/Handler_Environment";
 import Handler_API from "../handler/Handler_API";
 import Component_Generic, {
   Data_Component_Generic,
-} from "../component/Component_Generic";
+} from "../components/Component_Generic";
 
 interface Context_Brain_Value {
   handler_event_global: Handler_Event;

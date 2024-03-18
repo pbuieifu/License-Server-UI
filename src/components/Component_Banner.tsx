@@ -1,9 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { Props_Component_Rendered } from "./Component_Generic";
+import { useState, useEffect } from "react";
 import { Payload_Function, Payload_Result } from "../handler/Handler_Function";
+import Generic_Component, {
+  Data_Component_Generic,
+  Props_Component_Rendered,
+} from "./Component_Generic";
 import generateUniqueHash from "../helper/generateUniqueHash";
 
-export const Component_Footer = ({
+export const Component_Banner = ({
   data,
   handler_event,
   handler_function,
@@ -57,5 +60,22 @@ export const Component_Footer = ({
     };
   }, []);
 
-  return <div data-component="Component_Footer">Component_Footer</div>;
+  /*   useEffect(() => {
+    console.log(results);
+  }, [results]); */
+
+  return (
+    <div data-component="Component_Banner" data-css={data.content.css_key}>
+      {data.content.children &&
+        data.content.children.map(
+          (component_data: Data_Component_Generic, index: number) => (
+            <Generic_Component
+              data={component_data}
+              handler_event={handler_event}
+              key={index}
+            />
+          )
+        )}
+    </div>
+  );
 };

@@ -3,7 +3,7 @@ import { Props_Component_Rendered } from "./Component_Generic";
 import { Payload_Function, Payload_Result } from "../handler/Handler_Function";
 import generateUniqueHash from "../helper/generateUniqueHash";
 
-export const Component_Header = ({
+export const Component_Footer = ({
   data,
   handler_event,
   handler_function,
@@ -57,5 +57,9 @@ export const Component_Header = ({
     };
   }, []);
 
-  return <div data-component="Component_Header">Component_Header</div>;
+  return (
+    <div data-component="Component_Footer" data-css={data.content.css_key}>
+      Component_Footer
+    </div>
+  );
 };

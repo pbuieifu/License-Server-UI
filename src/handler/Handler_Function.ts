@@ -1,4 +1,4 @@
-import { Data_Component_Generic } from "../component/Component_Generic";
+import { Data_Component_Generic } from "../components/Component_Generic";
 import { Payload_Error } from "./Handler_Error";
 import Handler_Event, { Key_Events } from "./Handler_Event";
 

@@ -10,6 +10,7 @@ import { Component_Footer } from "./Component_Footer";
 import Handler_Event from "../handler/Handler_Event";
 import Handler_Function from "../handler/Handler_Function";
 import { Component_App_Router } from "./Component_App_Router";
+import { Component_Dashboard } from "./Component_Dashboard";
 
 interface Props_Component_Generic {
   data: Data_Component_Generic;
@@ -43,6 +44,7 @@ const Component_Map: Record<
   banner: Component_Banner,
   button: Component_Button,
   container: Component_Container,
+  dashboard: Component_Dashboard,
   footer: Component_Footer,
   header: Component_Header,
   page: Component_Page,

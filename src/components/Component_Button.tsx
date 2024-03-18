@@ -1,12 +1,20 @@
 import { useEffect, useState } from "react";
-import Component_Generic, {
-  Data_Component_Generic,
-  Props_Component_Rendered,
-} from "./Component_Generic";
+import { Props_Component_Rendered } from "./Component_Generic";
 import { Payload_Function, Payload_Result } from "../handler/Handler_Function";
 import generateUniqueHash from "../helper/generateUniqueHash";
 
-export const Component_Container = ({
+function generateRandomString(length: number) {
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
+  const charactersLength = characters.length;
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
+
+export const Component_Button = ({
   data,
   handler_event,
   handler_function,
@@ -26,6 +34,7 @@ export const Component_Container = ({
           handler_event: handler_event,
           key_call: key_call,
         }),
+        data: generateRandomString(10),
       })
     );
   };
@@ -65,17 +74,12 @@ export const Component_Container = ({
   }, [results]); */
 
   return (
-    <div data-component="Component_Container">
-      {data.content.children &&
-        data.content.children.map(
-          (component_data: Data_Component_Generic, index: number) => (
-            <Component_Generic
-              data={component_data}
-              handler_event={handler_event}
-              key={index}
-            />
-          )
-        )}
-    </div>
+    <button
+      data-component="Component_Button"
+      data-css={data.content.css_key}
+      onClick={handleClick}
+    >
+      {JSON.stringify(data)}
+    </button>
   );
 };

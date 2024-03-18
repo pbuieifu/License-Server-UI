@@ -62,8 +62,12 @@ export const Component_Template = ({
   }, [results]); */
 
   return (
-    <div data-component="Component_Template" onClick={handleClick}>
-      Component_Select_Box
+    <div
+      data-component="Component_Template"
+      data-css={data.content.css_key}
+      onClick={handleClick}
+    >
+      Component_Template
     </div>
   );
 };

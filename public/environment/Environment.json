@@ -88,7 +88,7 @@
             "component_key": "page",
             "enabled": true,
             "content": {
-              "page_key": "About",
+              "page_key": "Dashboard",
               "functions": {
                 "mount": ["function.navigation.page.subscribe"],
                 "unmount": ["function.navigation.page.unsubscribe"]
@@ -124,7 +124,11 @@
                     ]
                   }
                 },
-
+                {
+                  "component_key": "dashboard",
+                  "enabled": true,
+                  "content": {}
+                },
                 {
                   "component_key": "footer",
                   "enabled": true,
