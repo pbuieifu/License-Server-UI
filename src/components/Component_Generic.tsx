@@ -22,11 +22,11 @@ export interface Props_Component_Rendered extends Props_Component_Generic {
 }
 
 export interface Data_Component_Generic {
-  component_key: string;
+  key_component: string;
   enabled: boolean;
   content: {
     css_key?: string;
-    page_key?: string;
+    key_page?: string;
     functions?: {
       mount?: string[];
       unmount?: string[];
@@ -56,16 +56,13 @@ const Component_Generic = ({
   data,
   handler_event,
 }: Props_Component_Generic) => {
-  const Component_Rendered = Component_Map[data.component_key];
-  const handler_event_current = useRef<Handler_Event>(
-    new Handler_Event()
-  ).current;
-  const handler_function = useRef<Handler_Function>(
-    new Handler_Function(handler_event_current, data)
-  ).current;
+  const Component_Rendered = Component_Map[data.key_component];
+  const handler_event_ref = useRef<Handler_Event>(new Handler_Event()).current;
+  let new_function = new Handler_Function(handler_event_ref, data);
+  const handler_function_ref = useRef<Handler_Function>(new_function).current;
 
   const initializeComponent = async () => {
-    handler_event.adoptChild(handler_event_current);
+    handler_event.adoptChild(handler_event_ref);
   };
 
   useEffect(() => {
@@ -76,8 +73,8 @@ const Component_Generic = ({
     return (
       <Component_Rendered
         data={data}
-        handler_event={handler_event_current}
-        handler_function={handler_function}
+        handler_event={handler_event_ref}
+        handler_function={handler_function_ref}
       />
     );
   }

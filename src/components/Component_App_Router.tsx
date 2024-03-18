@@ -39,7 +39,7 @@ export const Component_App_Router = ({
   handler_event,
   handler_function,
 }: Props_Component_Rendered) => {
-  const key_call = `${data.component_key}${generateUniqueHash()}`;
+  const key_call = `${data.key_component}${generateUniqueHash()}`;
   const [results, setResults] = useState<Payload_Result[]>([]);
   const [cleanUpFunctions, setCleanUpFunctions] = useState<Payload_Function[]>(
     []
@@ -97,8 +97,8 @@ export const Component_App_Router = ({
               if (page && page.enabled)
                 return (
                   <Route
-                    key={page.content.page_key && page.content.page_key + index}
-                    path={`/${page.content.page_key}`}
+                    key={page.content.key_page && page.content.key_page + index}
+                    path={`/${page.content.key_page}`}
                     element={
                       <Generic_Component
                         data={page}

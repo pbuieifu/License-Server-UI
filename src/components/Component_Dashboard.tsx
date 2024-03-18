@@ -1,27 +1,112 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Props_Component_Rendered } from "./Component_Generic";
 import { Payload_Function, Payload_Result } from "../handler/Handler_Function";
 import generateUniqueHash from "../helper/generateUniqueHash";
 
+type Directions = "asc" | "desc" | "none";
+
+type Preferences_Column = {
+  key_column: string;
+  enabled: boolean;
+};
+
 const user_preferences = {
   columns: [
-    { column_key: "client", enabled: true },
-    { column_key: "product", enabled: true },
-    { column_key: "product_version", enabled: true },
-    { column_key: "module", enabled: true },
-    { column_key: "component", enabled: true },
-    { column_key: "status", enabled: true },
-    { column_key: "time_left", enabled: true },
-    { column_key: "action_required", enabled: true },
+    { key_column: "client", enabled: true },
+    { key_column: "product", enabled: true },
+    { key_column: "product_version", enabled: true },
+    { key_column: "module", enabled: true },
+    { key_column: "component", enabled: true },
+    { key_column: "status", enabled: true },
+    { key_column: "time_left", enabled: true },
+    { key_column: "action_required", enabled: true },
   ],
 };
-const api_data = {};
 
-const Component_Header_Button = ({}) => {};
-const Component_Header = ({}) => {};
+export type Payload_API_Dashboard = {
+  [key: string]: string;
+};
 
-const Component_Row_Button = ({}) => {};
-const Component_Row = ({}) => {};
+interface Component_Header_Button_Props {
+  column: Preferences_Column;
+  sort: (column_key: string) => void;
+  isSortedColumn: boolean;
+  sortDirection: Directions;
+}
+
+const Component_Header_Button = ({
+  column,
+  sort,
+  isSortedColumn,
+  sortDirection,
+}: Component_Header_Button_Props) => {
+  return (
+    <th key={column.key_column}>
+      {column.key_column.charAt(0).toUpperCase() + column.key_column.slice(1)}
+      <button onClick={() => sort(column.key_column)}>
+        {isSortedColumn ? sortDirection : "none"}
+      </button>
+    </th>
+  );
+};
+
+interface Component_Header_Props {
+  columns: Preferences_Column[];
+  sort: (column_key: string) => void;
+  sortedColumn: string | null;
+  sortDirection: Directions;
+}
+
+const Component_Header = ({
+  columns,
+  sort,
+  sortedColumn,
+  sortDirection,
+}: Component_Header_Props) => {
+  return (
+    <thead>
+      <tr>
+        {columns.map((column) => (
+          <Component_Header_Button
+            key={column.key_column}
+            column={column}
+            sort={sort}
+            isSortedColumn={sortedColumn === column.key_column}
+            sortDirection={sortDirection}
+          />
+        ))}
+      </tr>
+    </thead>
+  );
+};
+
+interface Component_Row_Button_Props {
+  row: Payload_API_Dashboard;
+  column: Preferences_Column;
+}
+
+const Component_Row_Button = ({ row, column }: Component_Row_Button_Props) => {
+  return <td key={`${row.id}-${column}`}>{row[column.key_column]}</td>;
+};
+
+interface Component_Row_Props {
+  row: Payload_API_Dashboard;
+  columns: Preferences_Column[];
+}
+
+const Component_Row = ({ row, columns }: Component_Row_Props) => {
+  return (
+    <tr key={row.id}>
+      {columns.map((column) => (
+        <Component_Row_Button
+          key={row.id + column.key_column}
+          row={row}
+          column={column}
+        />
+      ))}
+    </tr>
+  );
+};
 
 //on load get data from api
 //generate column buttons based on preference data
@@ -32,12 +117,38 @@ export const Component_Dashboard = ({
   handler_event,
   handler_function,
 }: Props_Component_Rendered) => {
-  const key_call = `${data.component_key}${generateUniqueHash()}`;
+  const key_call = `${data.key_component}${generateUniqueHash()}`;
   const [results, setResults] = useState<Payload_Result[]>([]);
   const [cleanUpFunctions, setCleanUpFunctions] = useState<Payload_Function[]>(
     []
   );
   const [onClick, setOnClick] = useState<Payload_Function[]>([]);
+  const [tableData, setTableData] = useState<Payload_API_Dashboard[]>([]);
+  const [sortColumn, setSortColumn] = useState<string | null>(null);
+  const [sortDirection, setSortDirection] = useState<Directions>("none");
+
+  const handleSortChange = (key_column: string) => {
+    let newDirection: Directions = "none";
+    if (sortColumn === key_column) {
+      newDirection = sortDirection === "asc" ? "desc" : "asc";
+    } else {
+      newDirection = "asc";
+    }
+
+    setSortColumn(key_column);
+    setSortDirection(newDirection);
+  };
+
+  const sortedData = useMemo(() => {
+    if (!sortColumn) return tableData;
+    return [...tableData].sort((a, b) => {
+      if (a[sortColumn] < b[sortColumn])
+        return sortDirection === "asc" ? -1 : 1;
+      if (a[sortColumn] > b[sortColumn])
+        return sortDirection === "asc" ? 1 : -1;
+      return 0;
+    });
+  }, [tableData, sortColumn, sortDirection]);
 
   const handleClick = () => {
     onClick.forEach((func) =>
@@ -81,17 +192,42 @@ export const Component_Dashboard = ({
     };
   }, []);
 
-  /*   useEffect(() => {
-    console.log(results);
-  }, [results]); */
+  const gatherData = () => {
+    const result_api: Payload_Result = handler_function.extractDataFromResult(
+      "api_answer",
+      results
+    );
+
+    const result_preferences: Payload_Result =
+      handler_function.extractDataFromResult("key", results);
+  };
+
+  useEffect(() => {
+    gatherData();
+    console.log(results as any);
+  }, [results]);
 
   return (
-    <div
+    <table
       data-component="Component_Template"
       data-css={data.content.css_key}
       onClick={handleClick}
     >
-      Component_Template
-    </div>
+      <Component_Header
+        columns={user_preferences.columns}
+        sort={handleSortChange}
+        sortedColumn={sortColumn}
+        sortDirection={sortDirection}
+      />
+      <tbody>
+        {sortedData.map((row, index) => (
+          <Component_Row
+            key={row.id + index}
+            row={row}
+            columns={user_preferences.columns}
+          />
+        ))}
+      </tbody>
+    </table>
   );
 };

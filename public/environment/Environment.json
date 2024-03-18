@@ -3,7 +3,7 @@
   "subscriber_content": {
     "themes": [],
     "app": {
-      "component_key": "app_router",
+      "key_component": "app_router",
       "enabled": true,
       "content": {
         "functions": {
@@ -12,10 +12,10 @@
         },
         "children": [
           {
-            "component_key": "page",
+            "key_component": "page",
             "enabled": true,
             "content": {
-              "page_key": "Home",
+              "key_page": "Home",
               "functions": {
                 "mount": [
                   "function.testing.log.subscribe",
@@ -28,17 +28,17 @@
               },
               "children": [
                 {
-                  "component_key": "header",
+                  "key_component": "header",
                   "enabled": true,
                   "content": {}
                 },
                 {
-                  "component_key": "banner",
+                  "key_component": "banner",
                   "enabled": true,
                   "content": {
                     "children": [
                       {
-                        "component_key": "page_title",
+                        "key_component": "page_title",
                         "enabled": true,
                         "content": {}
                       }
@@ -46,38 +46,27 @@
                   }
                 },
                 {
-                  "component_key": "container",
+                  "key_component": "button",
                   "enabled": true,
                   "content": {
-                    "css_key": "",
-                    "children": [
-                      {
-                        "component_key": "button",
-                        "enabled": true,
-                        "content": {
-                          "css_key": "Filled",
-                          "functions": {
-                            "on_click": ["function.testing.log.publish"]
-                          }
-                        }
-                      },
-                      {
-                        "component_key": "button",
-                        "enabled": true,
-                        "content": {
-                          "css_key": "Filled",
-                          "functions": {
-                            "on_click": [
-                              "function.navigation.page.publish_about"
-                            ]
-                          }
-                        }
-                      }
-                    ]
+                    "css_key": "Filled",
+                    "functions": {
+                      "on_click": ["function.testing.log.publish"]
+                    }
                   }
                 },
                 {
-                  "component_key": "footer",
+                  "key_component": "button",
+                  "enabled": true,
+                  "content": {
+                    "css_key": "Filled",
+                    "functions": {
+                      "on_click": ["function.navigation.page.publish_dashboard"]
+                    }
+                  }
+                },
+                {
+                  "key_component": "footer",
                   "enabled": true,
                   "content": {}
                 }
@@ -85,32 +74,32 @@
             }
           },
           {
-            "component_key": "page",
+            "key_component": "page",
             "enabled": true,
             "content": {
-              "page_key": "Dashboard",
+              "key_page": "Dashboard",
               "functions": {
                 "mount": ["function.navigation.page.subscribe"],
                 "unmount": ["function.navigation.page.unsubscribe"]
               },
               "children": [
                 {
-                  "component_key": "header",
+                  "key_component": "header",
                   "enabled": true,
                   "content": {}
                 },
                 {
-                  "component_key": "banner",
+                  "key_component": "banner",
                   "enabled": true,
                   "content": {
                     "children": [
                       {
-                        "component_key": "page_title",
+                        "key_component": "page_title",
                         "enabled": true,
                         "content": {}
                       },
                       {
-                        "component_key": "button",
+                        "key_component": "button",
                         "enabled": true,
                         "content": {
                           "css_key": "Filled",
@@ -125,12 +114,20 @@
                   }
                 },
                 {
-                  "component_key": "dashboard",
+                  "key_component": "dashboard",
                   "enabled": true,
-                  "content": {}
+                  "content": {
+                    "functions": {
+                      "mount": [
+                        "function.dashboard.api.publish",
+                        "function.dashboard.api.subscribe"
+                      ],
+                      "unmount": ["function.dashboard.api.unsubscribe"]
+                    }
+                  }
                 },
                 {
-                  "component_key": "footer",
+                  "key_component": "footer",
                   "enabled": true,
                   "content": {}
                 }

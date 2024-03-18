@@ -8,7 +8,7 @@ export const Component_Header = ({
   handler_event,
   handler_function,
 }: Props_Component_Rendered) => {
-  const key_call = `${data.component_key}${generateUniqueHash()}`;
+  const key_call = `${data.key_component}${generateUniqueHash()}`;
   const [results, setResults] = useState<Payload_Result[]>([]);
   const [cleanUpFunctions, setCleanUpFunctions] = useState<Payload_Function[]>(
     []

@@ -11,7 +11,7 @@ type Key_Function_Types = "mount" | "unmount" | "on_click";
 export type Payload_Function = (payload?: Payload_Function_Data) => any;
 
 export interface Payload_Result {
-  event_subscription_key: [Key_Events, string];
+  key_event_subscription: [Key_Events, string];
   data: any;
 }
 
@@ -46,7 +46,7 @@ export default class Handler_Function {
       if (current[key] === undefined) {
         this.notifyError({
           status_code: 404,
-          description: `Requested Function ${key} in ${this.component_data.component_key} not found.`,
+          description: `Requested Function ${key} in ${this.component_data.key_component} not found.`,
         });
         return () => {
           console.log(`Function: ${key} was not properly set up.`);
@@ -61,15 +61,15 @@ export default class Handler_Function {
   private cleanResults(payload: Payload_Function_Data, data: Payload_Result) {
     if (payload.setResults) {
       payload.setResults((results_prev: Payload_Result[]) => {
-        // Find all items matching the first key of event_subscription_key
+        // Find all items matching the first key of key_event_subscription
         const matchedItems = results_prev.filter(
           (result) =>
-            result.event_subscription_key[0] === data.event_subscription_key[0]
+            result.key_event_subscription[0] === data.key_event_subscription[0]
         );
 
         // Find the specific item in the matchedItems array that also matches the second key
         const specificItemIndex = matchedItems.findIndex(
-          (item) => item.event_subscription_key[1] === payload.key_call
+          (item) => item.key_event_subscription[1] === payload.key_call
         );
 
         // If an item with the specific key exists, update its data
@@ -78,8 +78,8 @@ export default class Handler_Function {
         } else {
           // If no specific item exists, add a new one with the data
           matchedItems.push({
-            event_subscription_key: [
-              data.event_subscription_key[0],
+            key_event_subscription: [
+              data.key_event_subscription[0],
               payload.key_call,
             ],
             data: data.data,
@@ -91,8 +91,8 @@ export default class Handler_Function {
         const updatedResults = results_prev
           .filter(
             (result) =>
-              result.event_subscription_key[0] !==
-              data.event_subscription_key[0]
+              result.key_event_subscription[0] !==
+              data.key_event_subscription[0]
           )
           .concat(matchedItems);
 
@@ -102,10 +102,10 @@ export default class Handler_Function {
   }
 
   public extractDataFromResult(key: string, results: Payload_Result[]): any {
-    return results.find((result) => result.event_subscription_key[0] === key);
+    return results.find((result) => result.key_event_subscription[0] === key);
   }
 
-  private generateMount(
+  private generateMounts(
     keys_function: string[],
     payload: Payload_Function_Data
   ): Payload_Function[] {
@@ -127,7 +127,7 @@ export default class Handler_Function {
     return [];
   }
 
-  private generateUnmount(
+  private generateUnmounts(
     keys_function: string[],
     payload: Payload_Function_Data
   ): Payload_Function[] {
@@ -168,14 +168,14 @@ export default class Handler_Function {
       switch (key) {
         case "mount":
           if (this.component_data.content.functions.mount && payload)
-            return this.generateMount(
+            return this.generateMounts(
               this.component_data.content.functions.mount,
               payload
             );
           break;
         case "unmount":
           if (this.component_data.content.functions.unmount && payload)
-            return this.generateUnmount(
+            return this.generateUnmounts(
               this.component_data.content.functions.unmount,
               payload
             );
@@ -187,12 +187,14 @@ export default class Handler_Function {
               this.component_data.content.functions.on_click
             );
           break;
+        default:
+          this.notifyError({
+            status_code: 404,
+            description: `Requested function ${this.component_data.key_component}, ${key} in ${this.component_data.key_component} not found.`,
+          });
+          break;
       }
 
-    this.notifyError({
-      status_code: 404,
-      description: `Requested function ${this.component_data.component_key}, ${key} in ${this.component_data.component_key} not found.`,
-    });
     return [];
   }
 }
@@ -206,7 +208,7 @@ const map_function: Map_Function = {
             payload.handler_event.subscribe("test_log", (data: string) => {
               if (payload.setResults)
                 payload.setResults({
-                  event_subscription_key: ["test_log"],
+                  key_event_subscription: ["test_log"],
                   data: data,
                 });
             });
@@ -216,7 +218,7 @@ const map_function: Map_Function = {
             payload.handler_event.unsubscribe("test_log", (data: string) => {
               if (payload.setResults)
                 payload.setResults({
-                  event_subscription_key: ["test_log"],
+                  key_event_subscription: ["test_log"],
                   data: data,
                 });
             });
@@ -236,7 +238,7 @@ const map_function: Map_Function = {
               (data: string) => {
                 if (payload.setResults)
                   payload.setResults({
-                    event_subscription_key: ["page_navigation"],
+                    key_event_subscription: ["page_navigation"],
                     data: data,
                   });
               }
@@ -249,7 +251,7 @@ const map_function: Map_Function = {
               (data: string) => {
                 if (payload.setResults)
                   payload.setResults({
-                    event_subscription_key: ["page_navigation"],
+                    key_event_subscription: ["page_navigation"],
                     data: data,
                   });
               }
@@ -259,9 +261,9 @@ const map_function: Map_Function = {
           if (payload.handler_event)
             payload.handler_event.publishUp("page_navigation", "Home");
         },
-        publish_about: (payload: Payload_Function_Data) => {
+        publish_dashboard: (payload: Payload_Function_Data) => {
           if (payload.handler_event)
-            payload.handler_event.publishUp("page_navigation", "About");
+            payload.handler_event.publishUp("page_navigation", "Dashboard");
         },
       },
     },
@@ -273,7 +275,7 @@ const map_function: Map_Function = {
             (data: string) => {
               if (payload.setResults)
                 payload.setResults({
-                  event_subscription_key: ["test_log"],
+                  key_event_subscription: [payload.key_call],
                   data: data,
                 });
             }
@@ -286,12 +288,45 @@ const map_function: Map_Function = {
             (data: string) => {
               if (payload.setResults)
                 payload.setResults({
-                  event_subscription_key: ["test_log"],
+                  key_event_subscription: [payload.key_call],
                   data: data,
                 });
             }
           );
       },
+    },
+    dashboard: {
+      api: {
+        subscribe: (payload: Payload_Function_Data) => {
+          if (payload.handler_event)
+            payload.handler_event.subscribe("api_answer", (data: any) => {
+              if (payload.setResults)
+                payload.setResults({
+                  key_event_subscription: [payload.key_call],
+                  data: data,
+                });
+            });
+        },
+        unsubscribe: (payload: Payload_Function_Data) => {
+          if (payload.handler_event)
+            payload.handler_event.unsubscribe("api_answer", (data: any) => {
+              if (payload.setResults)
+                payload.setResults({
+                  key_event_subscription: [payload.key_call],
+                  data: data,
+                });
+            });
+        },
+        publish: (payload: Payload_Function_Data) => {
+          if (payload.handler_event)
+            payload.handler_event.publishUp("api_call", {
+              key_api: "dashboard",
+              key_call: payload.key_call,
+              data: "test",
+            });
+        },
+      },
+      preferences: {},
     },
   },
 };
