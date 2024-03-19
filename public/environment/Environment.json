@@ -54,7 +54,7 @@
                     "functions": {
                       "on_click": ["function.testing.log.publish"]
                     },
-                    "content": { "text": "Test" }
+                    "text": "Test"
                   }
                 },
                 {
@@ -65,7 +65,7 @@
                     "functions": {
                       "on_click": ["function.navigation.page.publish_dashboard"]
                     },
-                    "content": { "text": "Dashboard" }
+                    "text": "Dashboard"
                   }
                 },
                 {

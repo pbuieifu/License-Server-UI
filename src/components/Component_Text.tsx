@@ -9,7 +9,7 @@ export const Component_Text = ({ data }: Props_Component_Rendered) => {
 
   return (
     <p data-component="Component_Text" data-css={data.json.content.css_key}>
-      <Component_Display_HTML html={JSON.stringify(data.json.content.text)} />
+      <Component_Display_HTML html={data.json.content.text} />
     </p>
   );
 };

@@ -38,7 +38,6 @@ const map_function: Map_Function = {
       },
       api: {
         publish: (payload: Payload_Function_Data) => {
-          console.log("puhlibhsing");
           if (payload.handler_event)
             payload.handler_event.publish("api_call", {
               key_api: "test",

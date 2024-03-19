@@ -5,7 +5,7 @@ import { Component_Display_HTML } from "./Component_Display_HTML";
 export const Component_Header = ({ data }: Props_Component_Rendered) => {
   return (
     <div data-component="Component_Header" data-css={data.json.content.css_key}>
-      <Component_Display_HTML html={JSON.stringify(data.json.content.text)} />
+      <Component_Display_HTML html={data.json.content.text} />
     </div>
   );
 };

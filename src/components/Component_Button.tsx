@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { Props_Component_Rendered } from "./Component_Generic";
+import { Component_Display_HTML } from "./Component_Display_HTML";
 
 function generateRandomString(length: number) {
   const characters =
@@ -23,7 +24,7 @@ export const Component_Button = ({ data }: Props_Component_Rendered) => {
       data-css={data.json.content.css_key}
       onClick={data.handleClick}
     >
-      {JSON.stringify(data.json)}
+      <Component_Display_HTML html={data.json.content.text} />
     </button>
   );
 };

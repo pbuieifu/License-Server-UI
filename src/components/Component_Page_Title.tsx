@@ -13,7 +13,7 @@ export const Component_Page_Title = ({ data }: Props_Component_Rendered) => {
       data-component="Component_Page_Title"
       data-css={data.json.content.css_key}
     >
-      <Component_Display_HTML html={JSON.stringify(data.json.content.text)} />
+      <Component_Display_HTML html={data.json.content.text} />
     </h1>
   );
 };

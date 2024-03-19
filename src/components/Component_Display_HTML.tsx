@@ -1,15 +1,17 @@
 interface Props_Component_Display_HTML {
-  html: string; // Optional markdown string to be rendered.
+  html?: string; // Optional markdown string to be rendered.
 }
 
 export const Component_Display_HTML = ({
   html,
 }: Props_Component_Display_HTML) => {
   // Function to decode HTML entities.
-  const decodeHtmlEntities = (input: string): string => {
-    var txt = document.createElement("textarea");
-    txt.innerHTML = input;
-    return decodeURIComponent(txt.value);
+  const decodeHtmlEntities = (input?: string): string => {
+    if (input) {
+      var txt = document.createElement("textarea");
+      txt.innerHTML = input;
+      return decodeURIComponent(txt.value);
+    } else return "";
   };
 
   // Function to find URLs and wrap them in <a> tags.
