@@ -31,7 +31,7 @@
                 {
                   "key_component": "header",
                   "enabled": true,
-                  "content": {}
+                  "content": { "text": "This is a Header" }
                 },
                 {
                   "key_component": "banner",
@@ -41,7 +41,7 @@
                       {
                         "key_component": "page_title",
                         "enabled": true,
-                        "content": {}
+                        "content": { "text": "This is the Home Page" }
                       }
                     ]
                   }
@@ -53,7 +53,8 @@
                     "css_key": "Filled",
                     "functions": {
                       "on_click": ["function.testing.log.publish"]
-                    }
+                    },
+                    "content": { "text": "Test" }
                   }
                 },
                 {
@@ -63,13 +64,14 @@
                     "css_key": "Filled",
                     "functions": {
                       "on_click": ["function.navigation.page.publish_dashboard"]
-                    }
+                    },
+                    "content": { "text": "Dashboard" }
                   }
                 },
                 {
                   "key_component": "footer",
                   "enabled": true,
-                  "content": {}
+                  "content": { "text": "This is a Footer" }
                 }
               ]
             }
@@ -87,7 +89,7 @@
                 {
                   "key_component": "header",
                   "enabled": true,
-                  "content": {}
+                  "content": { "text": "This is a Header" }
                 },
                 {
                   "key_component": "banner",
@@ -97,7 +99,9 @@
                       {
                         "key_component": "page_title",
                         "enabled": true,
-                        "content": {}
+                        "content": {
+                          "text": "This is the Dashboard Page"
+                        }
                       }
                     ]
                   }
@@ -109,7 +113,8 @@
                     "css_key": "Filled",
                     "functions": {
                       "on_click": ["function.navigation.page.publish_home"]
-                    }
+                    },
+                    "text": "Home"
                   }
                 },
                 {
@@ -128,7 +133,7 @@
                 {
                   "key_component": "footer",
                   "enabled": true,
-                  "content": {}
+                  "content": { "text": "This is a Footer" }
                 }
               ]
             }

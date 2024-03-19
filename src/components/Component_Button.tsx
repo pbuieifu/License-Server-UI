@@ -23,7 +23,7 @@ export const Component_Button = ({ data }: Props_Component_Rendered) => {
       data-css={data.json.content.css_key}
       onClick={data.handleClick}
     >
-      {JSON.stringify(data)}
+      {JSON.stringify(data.json)}
     </button>
   );
 };

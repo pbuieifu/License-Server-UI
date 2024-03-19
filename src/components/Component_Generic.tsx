@@ -45,6 +45,7 @@ export interface Data_Component_Generic {
       on_click?: string[];
     };
     children?: Data_Component_Generic[];
+    text?: string;
   };
 }
 
