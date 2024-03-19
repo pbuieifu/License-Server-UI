@@ -124,10 +124,6 @@ const Component_Generic = ({ data }: Props_Component_Generic) => {
     };
   }, []);
 
-  useEffect(() => {
-    if (results.length > 0) console.log(results);
-  }, [results]);
-
   if (data.enabled && Component_Rendered && componentData) {
     return <Component_Rendered data={componentData} results={results} />;
   }

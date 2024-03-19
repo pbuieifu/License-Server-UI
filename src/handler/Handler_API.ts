@@ -33,7 +33,7 @@ export default class Handler_API {
   };
   private API_Map: Record<Key_API_Types, Function> = {
     dashboard: this.getDashboard,
-    test: () => console.log("test"),
+    test: () => {},
   };
 
   private constructor(handler_event: Handler_Event) {
@@ -41,18 +41,6 @@ export default class Handler_API {
     this.handler_event.subscribe("api_call", (payload: Payload_API_Call) => {
       this.newCall(payload);
     });
-
-    this.handler_event.publish("retrieve_call", {
-      key_retrieve: "secret_key",
-      key_call: "handler_api",
-    });
-
-    this.handler_event.subscribe(
-      "retrieve_answer",
-      (payload: Payload_Result) => {
-        console.log(payload);
-      }
-    );
   }
 
   public static getInstance(handler_event?: Handler_Event): Handler_API {
@@ -61,6 +49,10 @@ export default class Handler_API {
     }
 
     return Handler_API.instance;
+  }
+
+  public static initialize(secret_key: string) {
+    Handler_API.getInstance().secret_key = secret_key;
   }
 
   private notifyError(error: Payload_Error) {

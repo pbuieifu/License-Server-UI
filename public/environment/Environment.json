@@ -1,5 +1,5 @@
 {
-  "api": { "secret_key": "test" },
+  "api": { "secret_key": "some secret key" },
   "subscriber_content": {
     "themes": [],
     "app": {

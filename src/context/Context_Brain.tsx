@@ -47,8 +47,9 @@ export const Context_Brain = () => {
   ).current;
   const handler_api = useRef(Handler_API.getInstance(handler_event)).current;
 
-  const [handler_environment, set_handler_Environment] =
-    useState<Handler_Environment>();
+  const handler_environment = useRef(
+    Handler_Environment.getInstance(handler_event)
+  ).current;
   const [ready, setReady] = useState<boolean>(false);
   const [states, setStates] = useState<State>({});
   const [appData, setAppData] = useState<Data_Component_Generic>(
@@ -96,14 +97,11 @@ export const Context_Brain = () => {
       path: ["api", "secret_key"],
     });
 
-    storeLongTerm({ key_store: "handler_api_secret_key", data: data_api });
+    Handler_API.initialize(data_api);
   };
 
   const initializeEnvironment = async () => {
     await Handler_Environment.initialize("environment/Environment.json");
-    initializeApp(handler_environment_instance);
-    initializeAPI(handler_environment_instance);
-    set_handler_Environment(handler_environment_instance);
   };
 
   const initializeStorage = () => {
@@ -117,7 +115,6 @@ export const Context_Brain = () => {
 
   const initializeRetrieve = () => {
     handler_event.subscribe("retrieve_call", (payload: Payload_Retrieve) => {
-      console.log("hi");
       retrieveData(payload);
     });
   };
@@ -135,8 +132,9 @@ export const Context_Brain = () => {
   };
 
   const initializeContext = async () => {
-    console.log(handler_api);
     await initializeEnvironment();
+    initializeAPI(handler_environment_instance);
+    initializeApp(handler_environment_instance);
     initializeStorage();
     initializeRetrieve();
     setReady(true);
