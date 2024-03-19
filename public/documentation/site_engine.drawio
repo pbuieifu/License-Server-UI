@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2024-03-19T19:30:47.488Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36" etag="sa6MmasqQHHcySzyVTXC" version="24.0.7" type="device">
+<mxfile host="app.diagrams.net" modified="2024-03-19T20:18:55.736Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36" etag="HV_BNesr5dKZszUvP1g-" version="24.0.7" type="device">
   <diagram id="C5RBs43oDa-KdzZeNtuy" name="Page-1">
-    <mxGraphModel dx="2206" dy="780" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="2551" dy="975" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-0" />
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-1" parent="WIyWlLk6GJQsqaUBKTNV-0" />
@@ -119,7 +119,7 @@
         <mxCell id="JpgJC43LP2yugee_lsow-74" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="JpgJC43LP2yugee_lsow-26" target="JpgJC43LP2yugee_lsow-31">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="JpgJC43LP2yugee_lsow-94" value="Generic&lt;div&gt;Generation&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="JpgJC43LP2yugee_lsow-74">
+        <mxCell id="JpgJC43LP2yugee_lsow-94" value="Component&lt;div&gt;Generation&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="JpgJC43LP2yugee_lsow-74">
           <mxGeometry x="-0.5522" y="2" relative="1" as="geometry">
             <mxPoint x="-2" y="43" as="offset" />
           </mxGeometry>
@@ -315,14 +315,14 @@
             <mxPoint x="-21" y="-7" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="JpgJC43LP2yugee_lsow-108" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;Generation&lt;/h1&gt;&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.&lt;/p&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
-          <mxGeometry x="-800" y="40" width="180" height="120" as="geometry" />
+        <mxCell id="JpgJC43LP2yugee_lsow-108" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;Generation&lt;/h1&gt;&lt;p&gt;Context_Brain is the launching point which generates the entire application from the Environment.json. It does this by taking the Environment Data and passing it into Component_Generic, which uses the data to generate Component Functions and additional Component Data. The combination of Component Functions, Component Data, and Environment Data is then used to render Component_Rendered. Depending on the Environment Data, Component_Rendered might generate its own children components via Component_Generic.&lt;/p&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="-800" y="40" width="360" height="200" as="geometry" />
         </mxCell>
-        <mxCell id="JpgJC43LP2yugee_lsow-109" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;Component Functions&lt;/h1&gt;&lt;p&gt;Component Functions refer to functions that execute relative to a component. They come in two forms:&lt;br&gt;&lt;br&gt;&lt;b&gt;Local:&lt;/b&gt; Are defined on the component level and are used for interactions that only affect the component itself (i.e. Clicking a button changes it color).&lt;/p&gt;&lt;p&gt;&lt;b&gt;Non-Local: &lt;/b&gt;Are defined in src/functions/Functions.ts and are assigned to components in public/environment/Environment,.json. These functions are used for interactions that extend beyond the scope of a single function (i.e. Making an API call or modifying a different component).&lt;/p&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
-          <mxGeometry x="-800" y="200" width="420" height="270" as="geometry" />
+        <mxCell id="JpgJC43LP2yugee_lsow-109" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;Component Functions&lt;/h1&gt;&lt;p&gt;Component Functions refer to functions that execute relative to a component. They come in two forms:&lt;br&gt;&lt;br&gt;&lt;b&gt;Local:&lt;/b&gt; Are defined on the component level and are used for interactions that only affect the component itself (i.e. Clicking a button changes it color).&lt;/p&gt;&lt;p&gt;&lt;b&gt;Non-Local: &lt;/b&gt;Are defined in Functions.ts and are assigned to components in Environment.json. These functions are used for interactions that extend beyond the scope of a single function (i.e. Making an API call or modifying a different component).&lt;/p&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="-800" y="520" width="400" height="240" as="geometry" />
         </mxCell>
-        <mxCell id="JpgJC43LP2yugee_lsow-110" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;Handlers&lt;/h1&gt;&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.&lt;/p&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
-          <mxGeometry x="-560" y="40" width="180" height="120" as="geometry" />
+        <mxCell id="JpgJC43LP2yugee_lsow-110" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;Handlers&lt;/h1&gt;&lt;p&gt;The Handlers are classes that do the work of decoupling all of the components from each other and the architecture. Among the handlers are:&lt;br&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;Environment: &lt;/b&gt;A singleton that handles all parsing of &lt;span style=&quot;background-color: initial;&quot;&gt;Environment.json for the entire system.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;Error: &lt;/b&gt;A singleton that handles all errors for the entire system.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Event: &lt;/b&gt;A singleton that handles all non-local communication for the entire system.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Function: &lt;/b&gt;An object that handles all non-local functions for a given component.&lt;/p&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="-800" y="240" width="360" height="280" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
