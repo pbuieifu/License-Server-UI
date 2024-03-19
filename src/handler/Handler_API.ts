@@ -17,11 +17,6 @@ export interface Payload_API_Call {
   data: any;
 }
 
-export interface Payload_API_Answer {
-  key_call: string;
-  data: any;
-}
-
 export default class Handler_API {
   private static instance: Handler_API;
   private handler_event: Handler_Event;
