@@ -36,7 +36,7 @@ export default class Handler_Function {
   }
 
   private notifyError(error: Payload_Error) {
-    this.handler_event.publishUp("error", error);
+    this.handler_event.publish("error", error);
   }
 
   private getFunction(key: string): Payload_Function {
@@ -126,6 +126,7 @@ export default class Handler_Function {
   ): Payload_Function[] {
     keys_function.map((key_function: string) => {
       const func = this.getFunction(key_function);
+
       let payload_function_data: Payload_Function_Data = {
         handler_event: payload.handler_event,
         key_call: payload.key_call,
@@ -240,7 +241,17 @@ const map_function: Map_Function = {
         },
         publish: (payload: Payload_Function_Data) => {
           if (payload.handler_event)
-            payload.handler_event.publishUp("test_log", payload.data);
+            payload.handler_event.publish("test_log", payload.data);
+        },
+      },
+      api: {
+        publish: (payload: Payload_Function_Data) => {
+          console.log("puhlibhsing");
+          if (payload.handler_event)
+            payload.handler_event.publish("api_call", {
+              key_api: "test",
+              key_call: payload.key_call,
+            });
         },
       },
     },
@@ -274,11 +285,11 @@ const map_function: Map_Function = {
         },
         publish_home: (payload: Payload_Function_Data) => {
           if (payload.handler_event)
-            payload.handler_event.publishUp("page_navigation", "Home");
+            payload.handler_event.publish("page_navigation", "Home");
         },
         publish_dashboard: (payload: Payload_Function_Data) => {
           if (payload.handler_event)
-            payload.handler_event.publishUp("page_navigation", "Dashboard");
+            payload.handler_event.publish("page_navigation", "Dashboard");
         },
       },
     },
@@ -340,10 +351,9 @@ const map_function: Map_Function = {
         },
         publish: (payload: Payload_Function_Data) => {
           if (payload.handler_event)
-            payload.handler_event.publishUp("api_call", {
+            payload.handler_event.publish("api_call", {
               key_api: "dashboard",
               key_call: payload.key_call,
-              data: "test",
             });
         },
       },

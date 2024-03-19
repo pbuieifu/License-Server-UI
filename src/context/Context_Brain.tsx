@@ -15,15 +15,20 @@ import Component_Generic, {
 } from "../components/Component_Generic";
 
 interface Context_Brain_Value {
-  handler_event_global: Handler_Event;
+  handler_event: Handler_Event;
   handler_error: Handler_Error;
   handler_environment?: Handler_Environment;
   handler_api: Handler_API;
 }
 
 interface Payload_Store {
-  key: string;
+  key_store: string;
   data: any;
+}
+
+interface Payload_Retrieve {
+  key_retrieve: string;
+  key_call: string;
 }
 
 interface State {
@@ -33,16 +38,14 @@ interface State {
 const Brain = createContext<Context_Brain_Value>({} as Context_Brain_Value);
 
 export const Context_Brain = () => {
-  const handler_event_global = useRef(new Handler_Event()).current;
+  const handler_event = useRef(Handler_Event.getInstance()).current;
   const handler_error = useRef(
-    Handler_Error.getInstance(handler_event_global)
+    Handler_Error.getInstance(handler_event)
   ).current;
   const handler_environment_instance = useRef(
-    Handler_Environment.getInstance(handler_event_global)
+    Handler_Environment.getInstance(handler_event)
   ).current;
-  const handler_api = useRef(
-    Handler_API.getInstance(handler_event_global)
-  ).current;
+  const handler_api = useRef(Handler_API.getInstance(handler_event)).current;
 
   const [handler_environment, set_handler_Environment] =
     useState<Handler_Environment>();
@@ -53,21 +56,29 @@ export const Context_Brain = () => {
   );
 
   const storeShortTerm = (payload: Payload_Store) => {
-    setStates((prevState) => ({ ...prevState, [payload.key]: payload.data }));
+    setStates((prevState) => ({
+      ...prevState,
+      [payload.key_store]: payload.data,
+    }));
   };
 
   const storeLongTerm = (payload: Payload_Store) => {
-    localStorage.setItem(payload.key, JSON.stringify(payload.data));
+    localStorage.setItem(payload.key_store, JSON.stringify(payload.data));
   };
 
-  const retrieveData = (key: string) => {
-    const stateData = states[key];
+  const retrieveData = (payload: Payload_Retrieve) => {
+    const stateData = states[payload.key_retrieve];
     if (stateData !== undefined) {
       return stateData;
     }
 
-    const storedData = localStorage.getItem(key);
-    return storedData ? JSON.parse(storedData) : undefined;
+    const storedData = localStorage.getItem(payload.key_retrieve);
+    return {
+      data: handler_event.publish("retrieve_answer", {
+        key_call: payload.key_call,
+        data: storedData ? JSON.parse(storedData) : undefined,
+      }),
+    };
   };
 
   const initializeApp = (handler: Handler_Environment) => {
@@ -79,52 +90,52 @@ export const Context_Brain = () => {
     setAppData(data_app);
   };
 
+  const initializeAPI = (handler: Handler_Environment) => {
+    const data_api = handler.sanitizedObjectLookUp({
+      fallback: [],
+      path: ["api", "secret_key"],
+    });
+
+    storeLongTerm({ key_store: "handler_api_secret_key", data: data_api });
+  };
+
   const initializeEnvironment = async () => {
     await Handler_Environment.initialize("environment/Environment.json");
     initializeApp(handler_environment_instance);
+    initializeAPI(handler_environment_instance);
     set_handler_Environment(handler_environment_instance);
   };
 
   const initializeStorage = () => {
-    handler_event_global.subscribe(
-      "store_short_term",
-      (payload: Payload_Store) => {
-        storeShortTerm(payload);
-      }
-    );
-    handler_event_global.subscribe(
-      "store_long_term",
-      (payload: Payload_Store) => {
-        storeLongTerm(payload);
-      }
-    );
+    handler_event.subscribe("store_short_term", (payload: Payload_Store) => {
+      storeShortTerm(payload);
+    });
+    handler_event.subscribe("store_long_term", (payload: Payload_Store) => {
+      storeLongTerm(payload);
+    });
   };
 
   const initializeRetrieve = () => {
-    handler_event_global.subscribe("retrieve", (key: string) => {
-      retrieveData(key);
+    handler_event.subscribe("retrieve_call", (payload: Payload_Retrieve) => {
+      console.log("hi");
+      retrieveData(payload);
     });
   };
 
   const cleanUp = () => {
-    handler_event_global.unsubscribe(
-      "store_short_term",
-      (payload: Payload_Store) => {
-        storeShortTerm(payload);
-      }
-    );
-    handler_event_global.unsubscribe(
-      "store_long_term",
-      (payload: Payload_Store) => {
-        storeLongTerm(payload);
-      }
-    );
-    handler_event_global.unsubscribe("retrieve", (key: string) => {
-      retrieveData(key);
+    handler_event.unsubscribe("store_short_term", (payload: Payload_Store) => {
+      storeShortTerm(payload);
+    });
+    handler_event.unsubscribe("store_long_term", (payload: Payload_Store) => {
+      storeLongTerm(payload);
+    });
+    handler_event.unsubscribe("retrieve_call", (payload: Payload_Retrieve) => {
+      retrieveData(payload);
     });
   };
 
   const initializeContext = async () => {
+    console.log(handler_api);
     await initializeEnvironment();
     initializeStorage();
     initializeRetrieve();
@@ -140,7 +151,7 @@ export const Context_Brain = () => {
   }, []);
 
   const contextValue: Context_Brain_Value = {
-    handler_event_global,
+    handler_event,
     handler_error,
     handler_environment,
     handler_api,
@@ -148,7 +159,7 @@ export const Context_Brain = () => {
 
   return ready ? (
     <Brain.Provider value={contextValue}>
-      <Component_Generic data={appData} handler_event={handler_event_global} />
+      <Component_Generic data={appData} />
     </Brain.Provider>
   ) : (
     <></>

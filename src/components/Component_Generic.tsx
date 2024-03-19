@@ -7,14 +7,11 @@ import { Component_Text } from "./Component_Text";
 import { Component_Page } from "./Component_Page";
 import { Component_Header } from "./Component_Header";
 import { Component_Footer } from "./Component_Footer";
-import Handler_Event from "../handler/Handler_Event";
-import Handler_Function from "../handler/Handler_Function";
 import { Component_App_Router } from "./Component_App_Router";
 import { Component_Dashboard } from "./Component_Dashboard";
 
 export interface Props_Component_Generic {
   data: Data_Component_Generic;
-  handler_event: Handler_Event;
 }
 
 export interface Data_Component_Generic {
@@ -48,22 +45,17 @@ const Component_Map: Record<
   text: Component_Text,
 };
 
-const Component_Generic = ({
-  data,
-  handler_event,
-}: Props_Component_Generic) => {
+const Component_Generic = ({ data }: Props_Component_Generic) => {
   const Component_Rendered = Component_Map[data.key_component];
-  const handler_event_ref = useRef<Handler_Event>(new Handler_Event()).current;
 
-  const initializeComponent = async () =>
-    handler_event.adoptChild(handler_event_ref);
+  const initializeComponent = async () => {};
 
   useEffect(() => {
     initializeComponent();
   }, []);
 
   if (data.enabled && Component_Rendered) {
-    return <Component_Rendered data={data} handler_event={handler_event_ref} />;
+    return <Component_Rendered data={data} />;
   }
 
   return <></>;

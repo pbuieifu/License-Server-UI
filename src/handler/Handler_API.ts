@@ -1,11 +1,11 @@
 import { Payload_API_Dashboard } from "../components/Component_Dashboard";
 import { parseLocalStorageItem } from "../helper/Local_Storage";
 import { stringToBoolean } from "../helper/stringToBoolean";
-import Handler_Environment from "./Handler_Environment";
 import { Payload_Error } from "./Handler_Error";
 import Handler_Event from "./Handler_Event";
+import { Payload_Result } from "./Handler_Function";
 
-type Key_API_Types = "dashboard";
+type Key_API_Types = "dashboard" | "test";
 
 interface Status {
   [key: string]: number;
@@ -25,14 +25,15 @@ export interface Payload_API_Answer {
 export default class Handler_API {
   private static instance: Handler_API;
   private handler_event: Handler_Event;
-  private environment: any;
+  private secret_key: any;
   private status_codes: Status = {
     success: 0,
     not_found: 3,
     denied: 5,
   };
-  private API_MAP: Record<Key_API_Types, Function> = {
+  private API_Map: Record<Key_API_Types, Function> = {
     dashboard: this.getDashboard,
+    test: () => console.log("test"),
   };
 
   private constructor(handler_event: Handler_Event) {
@@ -40,6 +41,18 @@ export default class Handler_API {
     this.handler_event.subscribe("api_call", (payload: Payload_API_Call) => {
       this.newCall(payload);
     });
+
+    this.handler_event.publish("retrieve_call", {
+      key_retrieve: "secret_key",
+      key_call: "handler_api",
+    });
+
+    this.handler_event.subscribe(
+      "retrieve_answer",
+      (payload: Payload_Result) => {
+        console.log(payload);
+      }
+    );
   }
 
   public static getInstance(handler_event?: Handler_Event): Handler_API {
@@ -55,7 +68,7 @@ export default class Handler_API {
   }
 
   private newCall(api_call: Payload_API_Call) {
-    const function_api = this.API_MAP[api_call.key_api as Key_API_Types];
+    const function_api = this.API_Map[api_call.key_api as Key_API_Types];
     if (function_api) {
       function_api.call(this, api_call);
     } else {
@@ -67,7 +80,7 @@ export default class Handler_API {
   }
 
   private newAnswer(payload: Payload_API_Call, answer: any) {
-    this.handler_event.publishDown("api_answer", {
+    this.handler_event.publish("api_answer", {
       key_call: payload.key_call,
       data: answer,
     });

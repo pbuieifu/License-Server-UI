@@ -5,6 +5,7 @@ import Handler_Function, {
   Payload_Result,
 } from "../handler/Handler_Function";
 import generateUniqueHash from "../helper/generateUniqueHash";
+import Handler_Event from "../handler/Handler_Event";
 
 type Directions = "asc" | "desc" | "none";
 
@@ -115,13 +116,11 @@ const Component_Row = ({ row, columns }: Component_Row_Props) => {
 //generate column buttons based on preference data
 //generate rows based on preference + api data
 
-export const Component_Dashboard = ({
-  data,
-  handler_event,
-}: Props_Component_Generic) => {
+export const Component_Dashboard = ({ data }: Props_Component_Generic) => {
   const key_call = useRef<string>(
     `${data.key_component}${generateUniqueHash()}`
   ).current;
+  const handler_event = Handler_Event.getInstance();
   const handler_function = new Handler_Function(handler_event, data);
   const [results, setResults] = useState<Payload_Result[]>([]);
   const [cleanUpFunctions, setCleanUpFunctions] = useState<Payload_Function[]>(
@@ -204,13 +203,14 @@ export const Component_Dashboard = ({
       results
     );
 
+    if (result_api) setTableData(result_api.data);
+
     const result_preferences: Payload_Result =
       handler_function.extractDataFromResult("key", key_call, results);
   };
 
   useEffect(() => {
     gatherData();
-    console.log(results as any);
   }, [results]);
 
   return (

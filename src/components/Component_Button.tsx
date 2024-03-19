@@ -5,6 +5,7 @@ import Handler_Function, {
   Payload_Result,
 } from "../handler/Handler_Function";
 import generateUniqueHash from "../helper/generateUniqueHash";
+import Handler_Event from "../handler/Handler_Event";
 
 function generateRandomString(length: number) {
   const characters =
@@ -17,13 +18,11 @@ function generateRandomString(length: number) {
   return result;
 }
 
-export const Component_Button = ({
-  data,
-  handler_event,
-}: Props_Component_Generic) => {
+export const Component_Button = ({ data }: Props_Component_Generic) => {
   const key_call = useRef<string>(
     `${data.key_component}${generateUniqueHash()}`
   ).current;
+  const handler_event = Handler_Event.getInstance();
   const handler_function = new Handler_Function(handler_event, data);
   const [results, setResults] = useState<Payload_Result[]>([]);
   const [cleanUpFunctions, setCleanUpFunctions] = useState<Payload_Function[]>(

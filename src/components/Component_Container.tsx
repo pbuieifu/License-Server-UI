@@ -8,14 +8,13 @@ import Handler_Function, {
   Payload_Result,
 } from "../handler/Handler_Function";
 import generateUniqueHash from "../helper/generateUniqueHash";
+import Handler_Event from "../handler/Handler_Event";
 
-export const Component_Container = ({
-  data,
-  handler_event,
-}: Props_Component_Generic) => {
+export const Component_Container = ({ data }: Props_Component_Generic) => {
   const key_call = useRef<string>(
     `${data.key_component}${generateUniqueHash()}`
   ).current;
+  const handler_event = Handler_Event.getInstance();
   const handler_function = new Handler_Function(handler_event, data);
   const [results, setResults] = useState<Payload_Result[]>([]);
   const [cleanUpFunctions, setCleanUpFunctions] = useState<Payload_Function[]>(
@@ -74,11 +73,7 @@ export const Component_Container = ({
       {data.content.children &&
         data.content.children.map(
           (component_data: Data_Component_Generic, index: number) => (
-            <Component_Generic
-              data={component_data}
-              handler_event={handler_event}
-              key={index}
-            />
+            <Component_Generic data={component_data} key={index} />
           )
         )}
     </div>

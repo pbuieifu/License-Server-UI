@@ -1,5 +1,5 @@
 {
-  "api": {},
+  "api": { "secret_key": "test" },
   "subscriber_content": {
     "themes": [],
     "app": {
@@ -19,7 +19,8 @@
               "functions": {
                 "mount": [
                   "function.testing.log.subscribe",
-                  "function.navigation.page.subscribe"
+                  "function.navigation.page.subscribe",
+                  "function.testing.api.publish"
                 ],
                 "unmount": [
                   "function.testing.log.unsubscribe",

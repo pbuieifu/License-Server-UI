@@ -6,14 +6,13 @@ import Handler_Function, {
 import { Component_Display_HTML } from "./Component_Display_HTML";
 import { Props_Component_Generic } from "./Component_Generic";
 import generateUniqueHash from "../helper/generateUniqueHash";
+import Handler_Event from "../handler/Handler_Event";
 
-export const Component_Page_Title = ({
-  data,
-  handler_event,
-}: Props_Component_Generic) => {
+export const Component_Page_Title = ({ data }: Props_Component_Generic) => {
   const key_call = useRef<string>(
     `${data.key_component}${generateUniqueHash()}`
   ).current;
+  const handler_event = Handler_Event.getInstance();
   const handler_function = new Handler_Function(handler_event, data);
   const [results, setResults] = useState<Payload_Result[]>([]);
   const [cleanUpFunctions, setCleanUpFunctions] = useState<Payload_Function[]>(
