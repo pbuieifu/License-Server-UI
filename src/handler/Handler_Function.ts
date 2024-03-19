@@ -1,5 +1,4 @@
 import { Data_Component_Generic } from "../components/Component_Generic";
-import { Payload_API_Answer } from "./Handler_API";
 import { Payload_Error } from "./Handler_Error";
 import Handler_Event, { Key_Events } from "./Handler_Event";
 
@@ -21,6 +20,11 @@ interface Payload_Function_Data {
   key_call: string;
   data?: any;
   setResults?: (data: any) => void;
+}
+
+interface Payload_Answer {
+  key_call: string;
+  data: any;
 }
 
 export default class Handler_Function {
@@ -327,7 +331,7 @@ const map_function: Map_Function = {
           if (payload.handler_event)
             payload.handler_event.subscribe(
               "api_answer",
-              (data: Payload_API_Answer) => {
+              (data: Payload_Answer) => {
                 if (payload.setResults)
                   payload.setResults({
                     key_event_subscription: ["api_answer", data.key_call],
@@ -340,7 +344,7 @@ const map_function: Map_Function = {
           if (payload.handler_event)
             payload.handler_event.unsubscribe(
               "api_answer",
-              (data: Payload_API_Answer) => {
+              (data: Payload_Answer) => {
                 if (payload.setResults)
                   payload.setResults({
                     key_event_subscription: ["api_answer", data.key_call],

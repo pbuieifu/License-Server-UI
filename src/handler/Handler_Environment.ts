@@ -10,15 +10,8 @@ interface Payload_Environment_Sanitized extends Payload_Environment {
   fallback: any;
 }
 
-interface Payload_Environment_Call
-  extends Payload_Environment_Sanitized,
-    Payload_Environment_Answer {
-  key_call: any;
-}
-
-export interface Payload_Environment_Answer {
-  key_call: any;
-  answer: any;
+interface Payload_Environment_Call extends Payload_Environment_Sanitized {
+  key_call: string;
 }
 
 export default class Handler_Environment {
