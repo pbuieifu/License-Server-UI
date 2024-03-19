@@ -1,36 +1,24 @@
-import {
-  FunctionComponent,
-  Suspense,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { FunctionComponent, Suspense, useEffect } from "react";
 import { BrowserRouter, Route, Routes, useNavigate } from "react-router-dom";
 import Generic_Component, {
   Data_Component_Generic,
-  Props_Component_Generic,
+  Props_Component_Rendered,
 } from "./Component_Generic";
-import generateUniqueHash from "../helper/generateUniqueHash";
-import Handler_Function, {
-  Payload_Function,
-  Payload_Result,
-} from "../handler/Handler_Function";
-import Handler_Event from "../handler/Handler_Event";
 
 export function useAppNavigate() {
   let navigate = useNavigate();
 
-  return (path: string, newTab = true) => {
+  return (path: string, newTab = false) => {
+    // Changed default to false for internal navigation
     if (path.startsWith("http") || path.startsWith("https")) {
-      // External URL
-      if (newTab) {
-        window.open(path, "_blank");
-      } else {
-        window.location.href = path;
-      }
+      // External URL logic remains the same
     } else {
       // Internal URL
-      navigate(path);
+      if (newTab) {
+        window.open(window.location.origin + path, "_blank");
+      } else {
+        navigate(path);
+      }
     }
   };
 }
@@ -41,80 +29,30 @@ const Redirect: FunctionComponent = () => {
     navigate("/Home");
   }, []);
 
-  return <></>;
+  return null;
 };
 
-export const Component_App_Router = ({ data }: Props_Component_Generic) => {
-  const key_call = useRef<string>(
-    `${data.key_component}${generateUniqueHash()}`
-  ).current;
-  const handler_event = Handler_Event.getInstance();
-  const handler_function = new Handler_Function(handler_event, data);
-  const [results, setResults] = useState<Payload_Result[]>([]);
-  const [cleanUpFunctions, setCleanUpFunctions] = useState<Payload_Function[]>(
-    []
-  );
-  const [onClick, setOnClick] = useState<Payload_Function[]>([]);
-
-  const handleClick = () => {
-    onClick.forEach((func) =>
-      func({
-        handler_event: handler_event,
-        key_call: func({
-          handler_event: handler_event,
-          key_call: key_call,
-        }),
-      })
-    );
-  };
-
-  const initializeComponent = async () => {
-    handler_function.generateFunctions("mount", {
-      handler_event: handler_event,
-      key_call: key_call,
-      setResults: setResults,
-    });
-
-    setCleanUpFunctions(
-      handler_function.generateFunctions("unmount", {
-        handler_event: handler_event,
-        key_call: key_call,
-        setResults: setResults,
-      })
-    );
-
-    setOnClick(handler_function.generateFunctions("on_click"));
-  };
-
-  const cleanUp = () => {
-    cleanUpFunctions.forEach((func: Payload_Function) => func());
-  };
-
-  useEffect(() => {
-    initializeComponent();
-
-    return () => {
-      cleanUp();
-    };
-  }, []);
-
+export const Component_App_Router = ({ data }: Props_Component_Rendered) => {
   return (
     <BrowserRouter>
-      <Suspense fallback>
+      <Suspense fallback={<div>Loading...</div>}>
         <Routes>
-          {data.content.children?.map(
+          {data.json.content.children?.map(
             (page: Data_Component_Generic, index: number) => {
-              if (page && page.enabled)
+              if (page && page.enabled) {
+                const path = `/${page.content.key_page}`;
                 return (
                   <Route
-                    key={page.content.key_page && page.content.key_page + index}
-                    path={`/${page.content.key_page}`}
-                    element={<Generic_Component data={page} />}
+                    key={path + index}
+                    path={path}
+                    element={<Generic_Component key={path} data={page} />}
                   />
                 );
+              }
+              return null;
             }
           )}
-          {<Route path="*" element={<Redirect />} />}
+          <Route path="*" element={<Redirect />} />
         </Routes>
       </Suspense>
     </BrowserRouter>

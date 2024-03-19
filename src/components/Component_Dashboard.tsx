@@ -1,11 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Props_Component_Generic } from "./Component_Generic";
-import Handler_Function, {
-  Payload_Function,
-  Payload_Result,
-} from "../handler/Handler_Function";
-import generateUniqueHash from "../helper/generateUniqueHash";
-import Handler_Event from "../handler/Handler_Event";
+import { useEffect, useMemo, useState } from "react";
+import { Props_Component_Rendered } from "./Component_Generic";
+import { Payload_Result } from "../handler/Handler_Function";
 
 type Directions = "asc" | "desc" | "none";
 
@@ -116,17 +111,10 @@ const Component_Row = ({ row, columns }: Component_Row_Props) => {
 //generate column buttons based on preference data
 //generate rows based on preference + api data
 
-export const Component_Dashboard = ({ data }: Props_Component_Generic) => {
-  const key_call = useRef<string>(
-    `${data.key_component}${generateUniqueHash()}`
-  ).current;
-  const handler_event = Handler_Event.getInstance();
-  const handler_function = new Handler_Function(handler_event, data);
-  const [results, setResults] = useState<Payload_Result[]>([]);
-  const [cleanUpFunctions, setCleanUpFunctions] = useState<Payload_Function[]>(
-    []
-  );
-  const [onClick, setOnClick] = useState<Payload_Function[]>([]);
+export const Component_Dashboard = ({
+  data,
+  results,
+}: Props_Component_Rendered) => {
   const [tableData, setTableData] = useState<Payload_API_Dashboard[]>([]);
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<Directions>("none");
@@ -154,59 +142,22 @@ export const Component_Dashboard = ({ data }: Props_Component_Generic) => {
     });
   }, [tableData, sortColumn, sortDirection]);
 
-  const handleClick = () => {
-    onClick.forEach((func) =>
-      func({
-        handler_event: handler_event,
-        key_call: func({
-          handler_event: handler_event,
-          key_call: key_call,
-        }),
-      })
-    );
-  };
-
-  const initializeComponent = async () => {
-    handler_function.generateFunctions("mount", {
-      handler_event: handler_event,
-      key_call: key_call,
-      setResults: setResults,
-    });
-
-    setCleanUpFunctions(
-      handler_function.generateFunctions("unmount", {
-        handler_event: handler_event,
-        key_call: key_call,
-        setResults: setResults,
-      })
-    );
-
-    setOnClick(handler_function.generateFunctions("on_click"));
-  };
-
-  const cleanUp = () => {
-    cleanUpFunctions.forEach((func: Payload_Function) => func());
-  };
-
-  useEffect(() => {
-    initializeComponent();
-
-    return () => {
-      cleanUp();
-    };
-  }, []);
-
   const gatherData = () => {
-    const result_api: Payload_Result = handler_function.extractDataFromResult(
-      "api_answer",
-      key_call,
-      results
-    );
+    const result_api: Payload_Result =
+      data.handler_function.extractDataFromResult(
+        "api_answer",
+        data.key_call,
+        results
+      );
 
     if (result_api) setTableData(result_api.data);
 
     const result_preferences: Payload_Result =
-      handler_function.extractDataFromResult("key", key_call, results);
+      data.handler_function.extractDataFromResult(
+        "key",
+        data.key_call,
+        results
+      );
   };
 
   useEffect(() => {
@@ -216,8 +167,8 @@ export const Component_Dashboard = ({ data }: Props_Component_Generic) => {
   return (
     <table
       data-component="Component_Template"
-      data-css={data.content.css_key}
-      onClick={handleClick}
+      data-css={data.json.content.css_key}
+      onClick={data.handleClick}
     >
       <Component_Header
         columns={user_preferences.columns}

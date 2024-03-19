@@ -161,9 +161,7 @@ export const Context_Brain = () => {
     <Brain.Provider value={contextValue}>
       <Component_Generic data={appData} />
     </Brain.Provider>
-  ) : (
-    <></>
-  );
+  ) : null;
 };
 
 export const useBrain = () => useContext(Brain);
