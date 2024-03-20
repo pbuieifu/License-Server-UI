@@ -4,7 +4,10 @@ import Component_Generic, {
   Props_Component_Rendered,
 } from "./Component_Generic";
 
-export const Component_Container = ({ data }: Props_Component_Rendered) => {
+export const Component_Container = ({
+  data,
+  results,
+}: Props_Component_Rendered) => {
   /*   useEffect(() => {
     console.log(results);
   }, [results]); */

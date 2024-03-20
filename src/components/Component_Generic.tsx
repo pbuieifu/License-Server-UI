@@ -15,6 +15,7 @@ import Handler_Function, {
   Payload_Result,
 } from "../handler/Handler_Function";
 import generateUniqueHash from "../helper/generateUniqueHash";
+import { Component_Preferences } from "./Component_Preferences";
 
 export interface Props_Component_Generic {
   data: Data_Component_Generic;
@@ -25,7 +26,7 @@ interface Data_Component_Rendered {
   json: Data_Component_Generic;
   handler_event: Handler_Event;
   handler_function: Handler_Function;
-  handleClick: () => void;
+  handleClick: (input: any) => void;
 }
 
 export interface Props_Component_Rendered {
@@ -62,6 +63,7 @@ const Component_Map: Record<
   header: Component_Header,
   page: Component_Page,
   page_title: Component_Page_Title,
+  preferences: Component_Preferences,
   text: Component_Text,
 };
 
@@ -98,13 +100,14 @@ const Component_Generic = ({ data }: Props_Component_Generic) => {
       json: data,
       handler_event: handler_event,
       handler_function: handler_function,
-      handleClick: () => {
+      handleClick: (input: any) => {
         handler_function.generateFunctions("on_click").forEach((func) =>
           func({
             handler_event: handler_event,
             key_call: func({
               handler_event: handler_event,
               key_call: key_call,
+              data: input,
             }),
           })
         );

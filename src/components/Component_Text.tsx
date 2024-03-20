@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Component_Display_HTML } from "./Component_Display_HTML";
 import { Props_Component_Rendered } from "./Component_Generic";
 
-export const Component_Text = ({ data }: Props_Component_Rendered) => {
+export const Component_Text = ({ data, results }: Props_Component_Rendered) => {
   /*    useEffect(() => {
     console.log(results);
   }, [results]); */

@@ -46,6 +46,73 @@ const map_function: Map_Function = {
         },
       },
     },
+    environment: {
+      subscribe: (payload: Payload_Function_Data) => {
+        if (payload.handler_event)
+          payload.handler_event.subscribe(
+            "environment_answer",
+            (data: string) => {
+              if (payload.setResults)
+                payload.setResults({
+                  key_event_subscription: [payload.key_call],
+                  data: data,
+                });
+            }
+          );
+      },
+      unsubscribe: (payload: Payload_Function_Data) => {
+        if (payload.handler_event)
+          payload.handler_event.unsubscribe(
+            "environment_answer",
+            (data: string) => {
+              if (payload.setResults)
+                payload.setResults({
+                  key_event_subscription: [payload.key_call],
+                  data: data,
+                });
+            }
+          );
+      },
+    },
+    preferences: {
+      subscribe: (payload: Payload_Function_Data) => {
+        if (payload.handler_event)
+          payload.handler_event.subscribe(
+            "api_answer",
+            (data: Payload_Answer) => {
+              if (payload.setResults)
+                payload.setResults({
+                  key_event_subscription: ["api_answer", data.key_call],
+                  data: data.data,
+                });
+            }
+          );
+      },
+      unsubscribe: (payload: Payload_Function_Data) => {
+        if (payload.handler_event)
+          payload.handler_event.unsubscribe(
+            "api_answer",
+            (data: Payload_Answer) => {
+              if (payload.setResults)
+                payload.setResults({
+                  key_event_subscription: ["api_answer", data.key_call],
+                  data: data.data,
+                });
+            }
+          );
+      },
+      publish_api: (payload: Payload_Function_Data) => {
+        if (payload.handler_event)
+          payload.handler_event.publish("api_call", {
+            key_api: "preferences",
+            key_call: payload.key_call,
+          });
+      },
+      publish_storage: (payload: Payload_Function_Data) => {
+        if (payload.handler_event && payload.data)
+          payload.handler_event.publish("store_short_term", payload.data);
+      },
+    },
     navigation: {
       page: {
         subscribe: (payload: Payload_Function_Data) => {
@@ -82,34 +149,6 @@ const map_function: Map_Function = {
           if (payload.handler_event)
             payload.handler_event.publish("page_navigation", "Dashboard");
         },
-      },
-    },
-    environment: {
-      subscribe: (payload: Payload_Function_Data) => {
-        if (payload.handler_event)
-          payload.handler_event.subscribe(
-            "environment_answer",
-            (data: string) => {
-              if (payload.setResults)
-                payload.setResults({
-                  key_event_subscription: [payload.key_call],
-                  data: data,
-                });
-            }
-          );
-      },
-      unsubscribe: (payload: Payload_Function_Data) => {
-        if (payload.handler_event)
-          payload.handler_event.unsubscribe(
-            "environment_answer",
-            (data: string) => {
-              if (payload.setResults)
-                payload.setResults({
-                  key_event_subscription: [payload.key_call],
-                  data: data,
-                });
-            }
-          );
       },
     },
     dashboard: {

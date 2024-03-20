@@ -1,7 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Props_Component_Rendered } from "./Component_Generic";
 
-export const Component_Template = ({ data }: Props_Component_Rendered) => {
+export const Component_Template = ({
+  data,
+  results,
+}: Props_Component_Rendered) => {
   /*   useEffect(() => {
     console.log(results);
   }, [results]); */

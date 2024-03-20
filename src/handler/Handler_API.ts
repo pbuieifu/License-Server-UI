@@ -3,9 +3,8 @@ import { parseLocalStorageItem } from "../helper/Local_Storage";
 import { stringToBoolean } from "../helper/stringToBoolean";
 import { Payload_Error } from "./Handler_Error";
 import Handler_Event from "./Handler_Event";
-import { Payload_Result } from "./Handler_Function";
 
-type Key_API_Types = "dashboard" | "test";
+type Key_API_Types = "preferences" | "dashboard" | "test";
 
 interface Status {
   [key: string]: number;
@@ -27,6 +26,7 @@ export default class Handler_API {
     denied: 5,
   };
   private API_Map: Record<Key_API_Types, Function> = {
+    preferences: this.getPreferences,
     dashboard: this.getDashboard,
     test: () => {},
   };
@@ -71,6 +71,23 @@ export default class Handler_API {
       key_call: payload.key_call,
       data: answer,
     });
+  }
+
+  private getPreferences(payload: Payload_API_Call) {
+    const answer = {
+      columns: [
+        { key_column: "client", enabled: true },
+        { key_column: "product", enabled: true },
+        { key_column: "product_version", enabled: true },
+        { key_column: "module", enabled: true },
+        { key_column: "component", enabled: true },
+        { key_column: "status", enabled: true },
+        { key_column: "time_left", enabled: true },
+        { key_column: "action_required", enabled: true },
+      ],
+    };
+
+    this.newAnswer(payload, answer);
   }
 
   private getDashboard(payload: Payload_API_Call) {

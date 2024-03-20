@@ -1,33 +1,19 @@
 import { useEffect, useMemo, useState } from "react";
 import { Props_Component_Rendered } from "./Component_Generic";
 import { Payload_Result } from "../handler/Handler_Function";
+import {
+  Data_Preferences,
+  Data_Preferences_Column,
+} from "../helper/Preferences";
 
 type Directions = "asc" | "desc" | "none";
 
-type Preferences_Column = {
-  key_column: string;
-  enabled: boolean;
-};
-
-const user_preferences = {
-  columns: [
-    { key_column: "client", enabled: true },
-    { key_column: "product", enabled: true },
-    { key_column: "product_version", enabled: true },
-    { key_column: "module", enabled: true },
-    { key_column: "component", enabled: true },
-    { key_column: "status", enabled: true },
-    { key_column: "time_left", enabled: true },
-    { key_column: "action_required", enabled: true },
-  ],
-};
-
 export type Payload_API_Dashboard = {
-  [key: string]: string;
+  [key: string]: any;
 };
 
 interface Component_Header_Button_Props {
-  column: Preferences_Column;
+  column: Data_Preferences_Column;
   sort: (column_key: string) => void;
   isSortedColumn: boolean;
   sortDirection: Directions;
@@ -50,7 +36,7 @@ const Component_Header_Button = ({
 };
 
 interface Component_Header_Props {
-  columns: Preferences_Column[];
+  columns?: Data_Preferences_Column[];
   sort: (column_key: string) => void;
   sortedColumn: string | null;
   sortDirection: Directions;
@@ -65,15 +51,16 @@ const Component_Header = ({
   return (
     <thead>
       <tr>
-        {columns.map((column) => (
-          <Component_Header_Button
-            key={column.key_column}
-            column={column}
-            sort={sort}
-            isSortedColumn={sortedColumn === column.key_column}
-            sortDirection={sortDirection}
-          />
-        ))}
+        {columns &&
+          columns.map((column) => (
+            <Component_Header_Button
+              key={column.key_column}
+              column={column}
+              sort={sort}
+              isSortedColumn={sortedColumn === column.key_column}
+              sortDirection={sortDirection}
+            />
+          ))}
       </tr>
     </thead>
   );
@@ -81,7 +68,7 @@ const Component_Header = ({
 
 interface Component_Row_Button_Props {
   row: Payload_API_Dashboard;
-  column: Preferences_Column;
+  column: Data_Preferences_Column;
 }
 
 const Component_Row_Button = ({ row, column }: Component_Row_Button_Props) => {
@@ -90,19 +77,20 @@ const Component_Row_Button = ({ row, column }: Component_Row_Button_Props) => {
 
 interface Component_Row_Props {
   row: Payload_API_Dashboard;
-  columns: Preferences_Column[];
+  columns?: Data_Preferences_Column[];
 }
 
 const Component_Row = ({ row, columns }: Component_Row_Props) => {
   return (
     <tr key={row.id}>
-      {columns.map((column) => (
-        <Component_Row_Button
-          key={row.id + column.key_column}
-          row={row}
-          column={column}
-        />
-      ))}
+      {columns &&
+        columns.map((column) => (
+          <Component_Row_Button
+            key={row.id + column.key_column}
+            row={row}
+            column={column}
+          />
+        ))}
     </tr>
   );
 };
@@ -116,6 +104,9 @@ export const Component_Dashboard = ({
   results,
 }: Props_Component_Rendered) => {
   const [tableData, setTableData] = useState<Payload_API_Dashboard[]>([]);
+  const [preferences, setPreferences] = useState<Data_Preferences>(
+    {} as Data_Preferences
+  );
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<Directions>("none");
 
@@ -158,6 +149,8 @@ export const Component_Dashboard = ({
         data.key_call,
         results
       );
+
+    if (result_preferences) setPreferences(result_preferences.data);
   };
 
   useEffect(() => {
@@ -171,7 +164,7 @@ export const Component_Dashboard = ({
       onClick={data.handleClick}
     >
       <Component_Header
-        columns={user_preferences.columns}
+        columns={preferences.columns}
         sort={handleSortChange}
         sortedColumn={sortColumn}
         sortDirection={sortDirection}
@@ -181,7 +174,7 @@ export const Component_Dashboard = ({
           <Component_Row
             key={row.id + index}
             row={row}
-            columns={user_preferences.columns}
+            columns={preferences.columns}
           />
         ))}
       </tbody>

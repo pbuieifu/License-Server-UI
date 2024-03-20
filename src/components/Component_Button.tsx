@@ -13,7 +13,10 @@ function generateRandomString(length: number) {
   return result;
 }
 
-export const Component_Button = ({ data }: Props_Component_Rendered) => {
+export const Component_Button = ({
+  data,
+  results,
+}: Props_Component_Rendered) => {
   /*   useEffect(() => {
     console.log(results);
   }, [results]); */

@@ -12,6 +12,20 @@
         },
         "children": [
           {
+            "key_component": "preferences",
+            "enabled": true,
+            "content": {
+              "functions": {
+                "mount": [
+                  "function.preferences.subscribe",
+                  "function.preferences.publish_api"
+                ],
+                "unmount": ["function.preferences.unsubscribe"],
+                "on_click": ["function.preferences.publish_storage"]
+              }
+            }
+          },
+          {
             "key_component": "page",
             "enabled": true,
             "content": {

@@ -5,7 +5,10 @@ import Generic_Component, {
   Props_Component_Rendered,
 } from "./Component_Generic";
 
-export const Component_Banner = ({ data }: Props_Component_Rendered) => {
+export const Component_Banner = ({
+  data,
+  results,
+}: Props_Component_Rendered) => {
   /*   useEffect(() => {
     console.log(results);
   }, [results]); */
