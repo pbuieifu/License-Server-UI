@@ -6,7 +6,7 @@ export const Component_Preferences = ({
   data,
   results,
 }: Props_Component_Rendered) => {
-  const setPreferences = () => {
+  const storePreferences = () => {
     const result_api: Payload_Result =
       data.handler_function.extractDataFromResult(
         "api_answer",
@@ -19,7 +19,7 @@ export const Component_Preferences = ({
   };
 
   useEffect(() => {
-    setPreferences();
+    storePreferences();
   }, [results]);
 
   return null;
