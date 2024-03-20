@@ -47,8 +47,11 @@ export default class Handler_Event {
 
   public publish(event: Key_Events, data: any): boolean {
     const eventCallbacks = this.event_subscriptions[event];
+
     if (eventCallbacks) {
-      eventCallbacks.forEach((callback) => callback(data));
+      eventCallbacks.forEach((callback) => {
+        callback(data);
+      });
       return true;
     }
 

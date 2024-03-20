@@ -68,16 +68,19 @@ export const Context_Brain = () => {
   };
 
   const retrieveData = (payload: Payload_Retrieve) => {
+    let returnData;
+
     const stateData = states[payload.key_retrieve];
     if (stateData !== undefined) {
-      return stateData;
+      returnData = stateData;
     }
 
     const storedData = localStorage.getItem(payload.key_retrieve);
+
     return {
       data: handler_event.publish("retrieve_answer", {
         key_call: payload.key_call,
-        data: storedData ? JSON.parse(storedData) : undefined,
+        data: storedData ? JSON.parse(storedData) : returnData,
       }),
     };
   };

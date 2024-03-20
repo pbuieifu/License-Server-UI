@@ -15,7 +15,7 @@ export const Component_Preferences = ({
       );
 
     if (result_api)
-      data.handleClick({ key_store: "preferences", data: result_api.data });
+      data.handleLifecycle({ key_store: "preferences", data: result_api.data });
   };
 
   useEffect(() => {

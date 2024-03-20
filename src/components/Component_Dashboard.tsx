@@ -145,12 +145,11 @@ export const Component_Dashboard = ({
 
     const result_preferences: Payload_Result =
       data.handler_function.extractDataFromResult(
-        "key",
+        "retrieve_answer",
         data.key_call,
         results
       );
-
-    if (result_preferences) setPreferences(result_preferences.data);
+    if (result_preferences) console.log(result_preferences.data);
   };
 
   useEffect(() => {
@@ -161,7 +160,7 @@ export const Component_Dashboard = ({
     <table
       data-component="Component_Template"
       data-css={data.json.content.css_key}
-      onClick={data.handleClick}
+      onClick={data.handleLifecycle}
     >
       <Component_Header
         columns={preferences.columns}

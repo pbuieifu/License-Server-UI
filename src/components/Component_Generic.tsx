@@ -26,7 +26,7 @@ interface Data_Component_Rendered {
   json: Data_Component_Generic;
   handler_event: Handler_Event;
   handler_function: Handler_Function;
-  handleClick: (input: any) => void;
+  handleLifecycle: (input: any) => void;
 }
 
 export interface Props_Component_Rendered {
@@ -43,7 +43,7 @@ export interface Data_Component_Generic {
     functions?: {
       mount?: string[];
       unmount?: string[];
-      on_click?: string[];
+      lifecycle?: string[];
     };
     children?: Data_Component_Generic[];
     text?: string;
@@ -100,8 +100,8 @@ const Component_Generic = ({ data }: Props_Component_Generic) => {
       json: data,
       handler_event: handler_event,
       handler_function: handler_function,
-      handleClick: (input: any) => {
-        handler_function.generateFunctions("on_click").forEach((func) =>
+      handleLifecycle: (input: any) => {
+        handler_function.generateFunctions("lifecycle").forEach((func) =>
           func({
             handler_event: handler_event,
             key_call: func({
@@ -126,6 +126,10 @@ const Component_Generic = ({ data }: Props_Component_Generic) => {
       cleanUp();
     };
   }, []);
+
+  useEffect(() => {
+    if (results.length > 0) console.log(results);
+  }, [results]);
 
   if (data.enabled && Component_Rendered && componentData) {
     return <Component_Rendered data={componentData} results={results} />;

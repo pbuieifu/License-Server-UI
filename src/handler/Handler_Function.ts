@@ -3,7 +3,7 @@ import map_function, { Map_Function } from "../functions/Functions";
 import { Payload_Error } from "./Handler_Error";
 import Handler_Event, { Key_Events } from "./Handler_Event";
 
-type Key_Function_Types = "mount" | "unmount" | "on_click";
+type Key_Function_Types = "mount" | "unmount" | "lifecycle";
 
 export type Payload_Function = (payload?: Payload_Function_Data) => any;
 
@@ -60,8 +60,38 @@ export default class Handler_Function {
     return current as Payload_Function;
   }
 
+  private checkGeneralResult(data: Payload_Result) {
+    return data.key_event_subscription[1] === undefined;
+  }
+
+  private checkSpecificResult(
+    payload: Payload_Function_Data,
+    data: Payload_Result
+  ) {
+    return payload.key_call === data.key_event_subscription[1];
+  }
+
+  private checkMatchedResult(
+    payload: Payload_Function_Data,
+    data: Payload_Result
+  ) {
+    return (
+      this.checkGeneralResult(data) || this.checkSpecificResult(payload, data)
+    );
+  }
+
+  private checkValidResult(
+    payload: Payload_Function_Data,
+    data: Payload_Result
+  ) {
+    return data.data !== undefined && this.checkMatchedResult(payload, data);
+  }
+
   private cleanResults(payload: Payload_Function_Data, data: Payload_Result) {
-    if (payload.setResults) {
+    if (
+      payload.setResults !== undefined &&
+      this.checkValidResult(payload, data)
+    ) {
       payload.setResults((results_prev: Payload_Result[]) => {
         // Find all items matching the first key of key_event_subscription
         const matchedItems = results_prev.filter(
@@ -167,7 +197,7 @@ export default class Handler_Function {
     return functions;
   }
 
-  private generateOnClicks(keys_function: string[]): Payload_Function[] {
+  private generateLifecycles(keys_function: string[]): Payload_Function[] {
     let functions: Payload_Function[] = [];
     keys_function.map((key_function: string) => {
       const func = this.getFunction(key_function);
@@ -198,10 +228,10 @@ export default class Handler_Function {
             );
 
           break;
-        case "on_click":
-          if (this.component_data.content.functions.on_click)
-            return this.generateOnClicks(
-              this.component_data.content.functions.on_click
+        case "lifecycle":
+          if (this.component_data.content.functions.lifecycle)
+            return this.generateLifecycles(
+              this.component_data.content.functions.lifecycle
             );
           break;
         default:

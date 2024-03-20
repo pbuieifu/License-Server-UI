@@ -108,7 +108,7 @@ const map_function: Map_Function = {
             key_call: payload.key_call,
           });
       },
-      publish_storage: (payload: Payload_Function_Data) => {
+      publish_store: (payload: Payload_Function_Data) => {
         if (payload.handler_event && payload.data)
           payload.handler_event.publish("store_short_term", payload.data);
       },
@@ -187,7 +187,41 @@ const map_function: Map_Function = {
             });
         },
       },
-      preferences: {},
+      preferences: {
+        subscribe: (payload: Payload_Function_Data) => {
+          if (payload.handler_event)
+            payload.handler_event.subscribe(
+              "retrieve_answer",
+              (data: Payload_Answer) => {
+                if (payload.setResults)
+                  payload.setResults({
+                    key_event_subscription: ["retrieve_answer", data.key_call],
+                    data: data.data,
+                  });
+              }
+            );
+        },
+        unsubscribe: (payload: Payload_Function_Data) => {
+          if (payload.handler_event)
+            payload.handler_event.unsubscribe(
+              "retrieve_answer",
+              (data: Payload_Answer) => {
+                if (payload.setResults)
+                  payload.setResults({
+                    key_event_subscription: ["retrieve_answer", data.key_call],
+                    data: data.data,
+                  });
+              }
+            );
+        },
+        publish_retrieve: (payload: Payload_Function_Data) => {
+          if (payload.handler_event)
+            payload.handler_event.publish("retrieve_call", {
+              key_retrieve: "preferences",
+              key_call: payload.key_call,
+            });
+        },
+      },
     },
   },
 };

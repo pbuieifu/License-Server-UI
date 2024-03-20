@@ -13,7 +13,7 @@ export const Component_Template = ({
     <div
       data-component="Component_Template"
       data-css={data.json.content.css_key}
-      onClick={data.handleClick}
+      onClick={data.handleLifecycle}
     >
       Component_Template
     </div>

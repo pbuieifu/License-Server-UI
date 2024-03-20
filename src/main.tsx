@@ -9,15 +9,10 @@ import ReactDOM from "react-dom/client";
 // Importing the App component from App.tsx.
 // App is the root component that acts as the starting point of the application UI.
 import App from "./App.tsx";
-import { StrictMode } from "react";
 
 // Creating a root DOM node with ReactDOM.createRoot.
 // This is where our React app starts its rendering.
 // 'document.getElementById("root")' finds the div with id 'root' in our index.html file,
 // and '!' asserts that the element exists (non-null assertion in TypeScript).
 // The .render method then mounts the App component onto this root DOM node.
-ReactDOM.createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>
-);
+ReactDOM.createRoot(document.getElementById("root")!).render(<App />);

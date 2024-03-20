@@ -21,7 +21,7 @@
                   "function.preferences.publish_api"
                 ],
                 "unmount": ["function.preferences.unsubscribe"],
-                "on_click": ["function.preferences.publish_storage"]
+                "lifecycle": ["function.preferences.publish_store"]
               }
             }
           },
@@ -66,7 +66,7 @@
                   "content": {
                     "css_key": "Filled",
                     "functions": {
-                      "on_click": ["function.testing.log.publish"]
+                      "lifecycle": ["function.testing.log.publish"]
                     },
                     "text": "Test"
                   }
@@ -77,7 +77,9 @@
                   "content": {
                     "css_key": "Filled",
                     "functions": {
-                      "on_click": ["function.navigation.page.publish_dashboard"]
+                      "lifecycle": [
+                        "function.navigation.page.publish_dashboard"
+                      ]
                     },
                     "text": "Dashboard"
                   }
@@ -126,7 +128,7 @@
                   "content": {
                     "css_key": "Filled",
                     "functions": {
-                      "on_click": ["function.navigation.page.publish_home"]
+                      "lifecycle": ["function.navigation.page.publish_home"]
                     },
                     "text": "Home"
                   }
@@ -137,10 +139,15 @@
                   "content": {
                     "functions": {
                       "mount": [
+                        "function.dashboard.api.subscribe",
                         "function.dashboard.api.publish",
-                        "function.dashboard.api.subscribe"
+                        "function.dashboard.preferences.subscribe",
+                        "function.dashboard.preferences.publish_retrieve"
                       ],
-                      "unmount": ["function.dashboard.api.unsubscribe"]
+                      "unmount": [
+                        "function.dashboard.api.unsubscribe",
+                        "function.dashboard.preferences.unsubscribe"
+                      ]
                     }
                   }
                 },
