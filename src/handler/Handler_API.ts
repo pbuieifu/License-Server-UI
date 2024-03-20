@@ -1,4 +1,5 @@
 import { Payload_API_Dashboard } from "../components/Component_Dashboard";
+import { Data_Preferences } from "../components/Component_Preferences";
 import { parseLocalStorageItem } from "../helper/Local_Storage";
 import { stringToBoolean } from "../helper/stringToBoolean";
 import { Payload_Error } from "./Handler_Error";
@@ -74,18 +75,20 @@ export default class Handler_API {
   }
 
   private getPreferences(payload: Payload_API_Call) {
-    const answer = {
-      theme: "dark_theme",
-      columns: [
-        { key_column: "client", enabled: true },
-        { key_column: "product", enabled: true },
-        { key_column: "product_version", enabled: true },
-        { key_column: "module", enabled: true },
-        { key_column: "component", enabled: true },
-        { key_column: "status", enabled: true },
-        { key_column: "time_left", enabled: true },
-        { key_column: "action_required", enabled: true },
-      ],
+    const answer: Data_Preferences = {
+      theme: "light_theme",
+      dashboard: {
+        columns: [
+          { key_column: "client", enabled: true },
+          { key_column: "product", enabled: true },
+          { key_column: "product_version", enabled: true },
+          { key_column: "module", enabled: true },
+          { key_column: "component", enabled: true },
+          { key_column: "status", enabled: true },
+          { key_column: "time_left", enabled: true },
+          { key_column: "action_required", enabled: true },
+        ],
+      },
     };
 
     this.newAnswer(payload, answer);
@@ -93,6 +96,50 @@ export default class Handler_API {
 
   private getDashboard(payload: Payload_API_Call) {
     const answer: Payload_API_Dashboard[] = [
+      {
+        id: "1",
+        client: "client_data_14",
+        product: "product_data_27",
+        product_version: "product_version_data_70",
+        module: "module_data_15",
+        component: "component_data_98",
+        status: "status_data_80",
+        time_left: "41",
+        action_required: "action_required_data_79",
+      },
+      {
+        id: "2",
+        client: "client_data_64",
+        product: "product_data_76",
+        product_version: "product_version_data_93",
+        module: "module_data_15",
+        component: "component_data_61",
+        status: "status_data_47",
+        time_left: "55",
+        action_required: "action_required_data_29",
+      },
+      {
+        id: "3",
+        client: "client_data_24",
+        product: "product_data_8",
+        product_version: "product_version_data_55",
+        module: "module_data_60",
+        component: "component_data_81",
+        status: "status_data_80",
+        time_left: "14",
+        action_required: "action_required_data_52",
+      },
+      {
+        id: "4",
+        client: "client_data_40",
+        product: "product_data_93",
+        product_version: "product_version_data_17",
+        module: "module_data_63",
+        component: "component_data_99",
+        status: "status_data_21",
+        time_left: "38",
+        action_required: "action_required_data_82",
+      },
       {
         id: "1",
         client: "client_data_14",

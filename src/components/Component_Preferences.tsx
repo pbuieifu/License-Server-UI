@@ -4,7 +4,9 @@ import { Payload_Result } from "../handler/Handler_Function";
 
 export type Data_Preferences = {
   theme: string;
-  columns: Data_Preferences_Column[];
+  dashboard: {
+    columns: Data_Preferences_Column[];
+  };
 };
 
 export type Data_Preferences_Column = {

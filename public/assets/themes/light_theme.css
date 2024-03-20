@@ -1,0 +1,25 @@
+:root {
+  --blue-color: #7f9bcd;
+  --dark-blue-color: #3759a4;
+  --light-blue-color: #d6e0f5;
+  --white-color: white;
+  --grey-color: #f0f0f0;
+  --dark-grey-color: #4d4d4d;
+  --border-radius: 5px;
+  --font-weight-bold: bold;
+  --font-size-rem: 1rem;
+  --transition-speed: 0.8s;
+}
+
+* {
+  background-color: var(--light-blue-color);
+}
+
+[data-component="Component_Dashboard"] {
+  background-color: var(--white-color);
+  filter: drop-shadow(0 0 0.25rem var(--silver-color));
+}
+
+[data-component="Component_Dashboard_Header"] {
+  background-color: var(--dark-blue-color);
+}

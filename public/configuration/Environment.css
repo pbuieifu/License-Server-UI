@@ -1,0 +1,94 @@
+:root {
+  --blue-color: #3759a4;
+  --light-blue-color: #7f9bcd;
+  --white-color: white;
+  --grey-color: #f0f0f0;
+  --dark-grey-color: #4d4d4d;
+  --silver-color: #c0c0c0;
+  --border-radius: 5px;
+  --font-weight-bold: bold;
+  --font-size-rem: 1rem;
+  --transition-speed: 0.8s;
+}
+
+* {
+  font-family: Verdana, Arial, sans-serif;
+  box-sizing: border-box;
+}
+
+[data-component="Component_Page"] {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+button:hover {
+  cursor: pointer;
+}
+
+[data-component="Component_Header"],
+[data-component="Component_Footer"] {
+  position: fixed;
+  height: 15vh;
+  width: 100vw;
+}
+
+[data-component="Component_Header"] {
+  top: 0;
+  left: 0;
+}
+
+[data-component="Component_Footer"] {
+  bottom: 0;
+  left: 0;
+}
+
+[data-component="Component_Dashboard"] {
+  height: 60%;
+  width: 80%;
+  border-radius: 15px;
+}
+
+[data-component="Component_Dashboard_Header"] {
+  position: fixed;
+  display: flex;
+  flex-direction: row;
+  top: 0;
+  left: 0;
+  height: 60px;
+  width: 100%;
+  border-radius: 15px 15px 0 0;
+  padding: 12px 0;
+}
+
+[data-component="Component_Dashboard_Header_Button"] {
+  white-space: nowrap;
+  background-color: transparent;
+  padding: 4px;
+  overflow-y: hidden;
+  overflow-x: auto;
+}
+
+[data-component="Component_Dashboard_Row_Container"] {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin-top: 60px;
+}
+
+[data-component="Component_Dashboard_Row"] {
+  display: flex;
+  flex-direction: row;
+}
+
+[data-component="Component_Dashboard_Row_Button"] {
+  white-space: nowrap;
+  background-color: transparent;
+  padding: 10px;
+  overflow-y: hidden;
+  overflow-x: auto;
+  height: 60px;
+}

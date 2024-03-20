@@ -12,86 +12,106 @@ export type Payload_API_Dashboard = {
   [key: string]: any;
 };
 
-interface Component_Header_Button_Props {
-  column: Data_Preferences_Column;
+interface Data_Column {
+  size: string;
+  key_column: string;
+}
+
+interface Component_Dashboard_Header_Button_Props {
+  column: Data_Column;
   sort: (column_key: string) => void;
   isSortedColumn: boolean;
   sortDirection: Directions;
 }
 
-const Component_Header_Button = ({
+const Component_Dashboard_Header_Button = ({
   column,
   sort,
   isSortedColumn,
   sortDirection,
-}: Component_Header_Button_Props) => {
+}: Component_Dashboard_Header_Button_Props) => {
   return (
-    <th key={column.key_column}>
+    <div
+      key={column.key_column}
+      style={{ width: `${column.size}` }}
+      data-component="Component_Dashboard_Header_Button"
+    >
       {column.key_column.charAt(0).toUpperCase() + column.key_column.slice(1)}
       <button onClick={() => sort(column.key_column)}>
         {isSortedColumn ? sortDirection : "none"}
       </button>
-    </th>
+    </div>
   );
 };
 
-interface Component_Header_Props {
-  columns?: Data_Preferences_Column[];
+interface Component_Dashboard_Header_Props {
+  columns?: Data_Column[];
   sort: (column_key: string) => void;
   sortedColumn: string | null;
   sortDirection: Directions;
 }
 
-const Component_Header = ({
+const Component_Dashboard_Header = ({
   columns,
   sort,
   sortedColumn,
   sortDirection,
-}: Component_Header_Props) => {
+}: Component_Dashboard_Header_Props) => {
   return (
-    <thead>
-      <tr>
-        {columns &&
-          columns.map((column) => (
-            <Component_Header_Button
-              key={column.key_column}
-              column={column}
-              sort={sort}
-              isSortedColumn={sortedColumn === column.key_column}
-              sortDirection={sortDirection}
-            />
-          ))}
-      </tr>
-    </thead>
+    <div data-component="Component_Dashboard_Header">
+      {columns &&
+        columns.map((column) => (
+          <Component_Dashboard_Header_Button
+            key={column.key_column}
+            column={column}
+            sort={sort}
+            isSortedColumn={sortedColumn === column.key_column}
+            sortDirection={sortDirection}
+          />
+        ))}
+    </div>
   );
 };
 
-interface Component_Row_Button_Props {
+interface Component_Dashboard_Row_Button_Props {
   row: Payload_API_Dashboard;
-  column: Data_Preferences_Column;
+  column: Data_Column;
 }
 
-const Component_Row_Button = ({ row, column }: Component_Row_Button_Props) => {
-  return <td key={`${row.id}-${column}`}>{row[column.key_column]}</td>;
+const Component_Dashboard_Row_Button = ({
+  row,
+  column,
+}: Component_Dashboard_Row_Button_Props) => {
+  return (
+    <div
+      style={{ width: `${column.size}` }}
+      data-component="Component_Dashboard_Row_Button"
+    >
+      {row[column.key_column]}
+    </div>
+  );
 };
 
-interface Component_Row_Props {
+interface Component_Dashboard_Row_Props {
   row: Payload_API_Dashboard;
-  columns?: Data_Preferences_Column[];
+  columns?: Data_Column[];
 }
 
-const Component_Row = ({ row, columns }: Component_Row_Props) => {
+const Component_Dashboard_Row = ({
+  row,
+  columns,
+}: Component_Dashboard_Row_Props) => {
   return (
-    <tr key={row.id}>
+    <div key={row.id} data-component="Component_Dashboard_Row">
       {columns &&
         columns.map((column) => (
-          <Component_Row_Button
+          <Component_Dashboard_Row_Button
             key={row.id + column.key_column}
             row={row}
             column={column}
           />
         ))}
-    </tr>
+    </div>
   );
 };
 
@@ -104,11 +124,10 @@ export const Component_Dashboard = ({
   results,
 }: Props_Component_Rendered) => {
   const [tableData, setTableData] = useState<Payload_API_Dashboard[]>([]);
-  const [preferences, setPreferences] = useState<Data_Preferences>(
-    {} as Data_Preferences
-  );
+  const [preferences, setPreferences] = useState<Data_Preferences>();
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<Directions>("none");
+  const [columnData, setColumnData] = useState<Data_Column[]>([]);
 
   const handleSortChange = (key_column: string) => {
     let newDirection: Directions = "none";
@@ -149,7 +168,26 @@ export const Component_Dashboard = ({
         data.key_call,
         results
       );
-    if (result_preferences) setPreferences(result_preferences.data);
+
+    if (result_preferences) {
+      setPreferences(result_preferences.data);
+
+      let columns: Data_Column[] = [];
+
+      result_preferences.data.dashboard.columns.map(
+        (column: Data_Preferences_Column) => {
+          if (column.enabled)
+            columns.push({ size: "", key_column: column.key_column });
+        }
+      );
+
+      setColumnData(
+        columns.map((column) => ({
+          ...column,
+          size: `${100 / columns.length}%`,
+        }))
+      );
+    }
   };
 
   useEffect(() => {
@@ -157,26 +195,26 @@ export const Component_Dashboard = ({
   }, [results]);
 
   return (
-    <table
-      data-component="Component_Template"
+    <div
+      data-component="Component_Dashboard"
       data-css={data.json.content.css_key}
       onClick={data.handleLifecycle}
     >
-      <Component_Header
-        columns={preferences.columns}
+      <Component_Dashboard_Header
+        columns={columnData}
         sort={handleSortChange}
         sortedColumn={sortColumn}
         sortDirection={sortDirection}
       />
-      <tbody>
+      <div data-component="Component_Dashboard_Row_Container">
         {sortedData.map((row, index) => (
-          <Component_Row
+          <Component_Dashboard_Row
             key={row.id + index}
             row={row}
-            columns={preferences.columns}
+            columns={columnData}
           />
         ))}
-      </tbody>
-    </table>
+      </div>
+    </div>
   );
 };

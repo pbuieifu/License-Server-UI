@@ -6,7 +6,7 @@ import path from "path";
 // Read JSON file
 const configPath = path.resolve(
   __dirname,
-  "./public/environment/Environment.json"
+  "./public/configuration/Environment.json"
 );
 const configFile = JSON.parse(fs.readFileSync(configPath, "utf8"));
 const applicationWebRoot = configFile.api.application_webroot || "/";
