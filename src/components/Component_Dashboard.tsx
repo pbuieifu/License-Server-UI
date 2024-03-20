@@ -2,9 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import { Props_Component_Rendered } from "./Component_Generic";
 import { Payload_Result } from "../handler/Handler_Function";
 import {
-  Data_Preferences,
   Data_Preferences_Column,
-} from "../helper/Preferences";
+  Data_Preferences,
+} from "./Component_Preferences";
 
 type Directions = "asc" | "desc" | "none";
 

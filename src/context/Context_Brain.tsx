@@ -89,6 +89,10 @@ export const Context_Brain = () => {
     });
   };
 
+  const initializeEnvironment = async () => {
+    await Handler_Environment.initialize("configuration/Environment.json");
+  };
+
   const initializeApp = (handler: Handler_Environment) => {
     const data_app = handler.sanitizedObjectLookUp({
       fallback: [],
@@ -105,10 +109,6 @@ export const Context_Brain = () => {
     });
 
     Handler_API.initialize(data_api);
-  };
-
-  const initializeEnvironment = async () => {
-    await Handler_Environment.initialize("environment/Environment.json");
   };
 
   const initializeStorage = () => {
@@ -164,6 +164,11 @@ export const Context_Brain = () => {
 
   return ready ? (
     <Brain.Provider value={contextValue}>
+      <link
+        rel="stylesheet"
+        type="text/css"
+        href="configuration/Environment.css"
+      />
       <Component_Generic data={appData} />
     </Brain.Provider>
   ) : null;

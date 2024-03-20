@@ -75,6 +75,7 @@ export default class Handler_API {
 
   private getPreferences(payload: Payload_API_Call) {
     const answer = {
+      theme: "dark_theme",
       columns: [
         { key_column: "client", enabled: true },
         { key_column: "product", enabled: true },
