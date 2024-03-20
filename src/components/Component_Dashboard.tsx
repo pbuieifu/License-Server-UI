@@ -149,7 +149,7 @@ export const Component_Dashboard = ({
         data.key_call,
         results
       );
-    if (result_preferences) console.log(result_preferences.data);
+    if (result_preferences) setPreferences(result_preferences.data);
   };
 
   useEffect(() => {

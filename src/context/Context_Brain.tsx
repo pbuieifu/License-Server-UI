@@ -52,9 +52,14 @@ export const Context_Brain = () => {
   ).current;
   const [ready, setReady] = useState<boolean>(false);
   const [states, setStates] = useState<State>({});
+  const stateRef = useRef<State>(states);
   const [appData, setAppData] = useState<Data_Component_Generic>(
     {} as Data_Component_Generic
   );
+
+  useEffect(() => {
+    stateRef.current = states;
+  }, [states]);
 
   const storeShortTerm = (payload: Payload_Store) => {
     setStates((prevState) => ({
@@ -70,19 +75,18 @@ export const Context_Brain = () => {
   const retrieveData = (payload: Payload_Retrieve) => {
     let returnData;
 
-    const stateData = states[payload.key_retrieve];
+    const stateData = stateRef.current[payload.key_retrieve];
     if (stateData !== undefined) {
       returnData = stateData;
+    } else {
+      const storedData = localStorage.getItem(payload.key_retrieve);
+      returnData = storedData ? JSON.parse(storedData) : undefined;
     }
 
-    const storedData = localStorage.getItem(payload.key_retrieve);
-
-    return {
-      data: handler_event.publish("retrieve_answer", {
-        key_call: payload.key_call,
-        data: storedData ? JSON.parse(storedData) : returnData,
-      }),
-    };
+    handler_event.publish("retrieve_answer", {
+      key_call: payload.key_call,
+      data: returnData,
+    });
   };
 
   const initializeApp = (handler: Handler_Environment) => {

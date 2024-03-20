@@ -61,6 +61,11 @@ export const Component_App_Router = ({
 
   return (
     <>
+      {structuralComponents?.map(
+        (component: Data_Component_Generic, index: number) => {
+          return <Generic_Component key={index} data={component} />;
+        }
+      )}
       <BrowserRouter>
         <Suspense fallback={<div>Loading...</div>}>
           <Routes>
@@ -79,11 +84,6 @@ export const Component_App_Router = ({
           </Routes>
         </Suspense>
       </BrowserRouter>
-      {structuralComponents?.map(
-        (component: Data_Component_Generic, index: number) => {
-          return <Generic_Component key={index} data={component} />;
-        }
-      )}
     </>
   );
 };
