@@ -17,27 +17,30 @@ interface Data_Column {
   key_column: string;
 }
 
-interface Component_Dashboard_Header_Button_Props {
+interface Component_Dashboard_Header_Item_Props {
   column: Data_Column;
   sort: (column_key: string) => void;
   isSortedColumn: boolean;
   sortDirection: Directions;
 }
 
-const Component_Dashboard_Header_Button = ({
+const Component_Dashboard_Header_Item = ({
   column,
   sort,
   isSortedColumn,
   sortDirection,
-}: Component_Dashboard_Header_Button_Props) => {
+}: Component_Dashboard_Header_Item_Props) => {
   return (
     <div
       key={column.key_column}
       style={{ width: `${column.size}` }}
-      data-component="Component_Dashboard_Header_Button"
+      data-component="Component_Dashboard_Header_Item"
     >
       {column.key_column.charAt(0).toUpperCase() + column.key_column.slice(1)}
-      <button onClick={() => sort(column.key_column)}>
+      <button
+        data-component="Component_Dashboard_Header_Button"
+        onClick={() => sort(column.key_column)}
+      >
         {isSortedColumn ? sortDirection : "none"}
       </button>
     </div>
@@ -61,7 +64,7 @@ const Component_Dashboard_Header = ({
     <div data-component="Component_Dashboard_Header">
       {columns &&
         columns.map((column) => (
-          <Component_Dashboard_Header_Button
+          <Component_Dashboard_Header_Item
             key={column.key_column}
             column={column}
             sort={sort}
@@ -73,19 +76,19 @@ const Component_Dashboard_Header = ({
   );
 };
 
-interface Component_Dashboard_Row_Button_Props {
+interface Component_Dashboard_Row_Item_Props {
   row: Payload_API_Dashboard;
   column: Data_Column;
 }
 
-const Component_Dashboard_Row_Button = ({
+const Component_Dashboard_Row_Item = ({
   row,
   column,
-}: Component_Dashboard_Row_Button_Props) => {
+}: Component_Dashboard_Row_Item_Props) => {
   return (
     <div
       style={{ width: `${column.size}` }}
-      data-component="Component_Dashboard_Row_Button"
+      data-component="Component_Dashboard_Row_Item"
     >
       {row[column.key_column]}
     </div>
@@ -101,30 +104,43 @@ const Component_Dashboard_Row = ({
   row,
   columns,
 }: Component_Dashboard_Row_Props) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const toggleExpansion = () => {
+    setIsExpanded(!isExpanded);
+  };
+
   return (
-    <div key={row.id} data-component="Component_Dashboard_Row">
-      {columns &&
-        columns.map((column) => (
-          <Component_Dashboard_Row_Button
-            key={row.id + column.key_column}
-            row={row}
-            column={column}
-          />
-        ))}
+    <div data-component="Component_Dashboard_Row_Pseudo" key={row.id}>
+      <div
+        data-component="Component_Dashboard_Row"
+        onClick={toggleExpansion}
+        style={{ cursor: "pointer" }}
+      >
+        {columns &&
+          columns.map((column) => (
+            <Component_Dashboard_Row_Item
+              key={row.id + column.key_column}
+              row={row}
+              column={column}
+            />
+          ))}
+      </div>
+      <div
+        className={isExpanded ? "expanded" : ""}
+        data-component="Component_Dashboard_Row_Panel"
+      >
+        Panel Content Here
+      </div>
     </div>
   );
 };
-
-//on load get data from api
-//generate column buttons based on preference data
-//generate rows based on preference + api data
 
 export const Component_Dashboard = ({
   data,
   results,
 }: Props_Component_Rendered) => {
   const [tableData, setTableData] = useState<Payload_API_Dashboard[]>([]);
-  const [preferences, setPreferences] = useState<Data_Preferences>();
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<Directions>("none");
   const [columnData, setColumnData] = useState<Data_Column[]>([]);
@@ -169,11 +185,9 @@ export const Component_Dashboard = ({
         results
       );
 
+    let columns: Data_Column[] = [];
+
     if (result_preferences) {
-      setPreferences(result_preferences.data);
-
-      let columns: Data_Column[] = [];
-
       result_preferences.data.dashboard.columns.map(
         (column: Data_Preferences_Column) => {
           if (column.enabled)

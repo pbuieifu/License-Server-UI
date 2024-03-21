@@ -108,47 +108,63 @@
                   "content": { "text": "This is a Header" }
                 },
                 {
-                  "key_component": "banner",
+                  "key_component": "container",
                   "enabled": true,
                   "content": {
+                    "css_key": "dashboard_page_container",
                     "children": [
                       {
-                        "key_component": "page_title",
+                        "key_component": "banner",
                         "enabled": true,
                         "content": {
-                          "text": "This is the Dashboard Page"
+                          "children": [
+                            {
+                              "key_component": "page_title",
+                              "enabled": true,
+                              "content": {
+                                "text": "This is the Dashboard Page"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key_component": "button",
+                        "enabled": true,
+                        "content": {
+                          "css_key": "Filled",
+                          "functions": {
+                            "lifecycle": [
+                              "function.navigation.page.publish_home"
+                            ]
+                          },
+                          "text": "Home"
+                        }
+                      },
+                      {
+                        "key_component": "dashboard",
+                        "enabled": true,
+                        "content": {
+                          "functions": {
+                            "mount": [
+                              "function.dashboard.api.subscribe",
+                              "function.dashboard.api.publish",
+                              "function.dashboard.preferences.subscribe",
+                              "function.dashboard.preferences.publish_retrieve"
+                            ],
+                            "unmount": [
+                              "function.dashboard.api.unsubscribe",
+                              "function.dashboard.preferences.unsubscribe"
+                            ]
+                          },
+                          "assets": [
+                            { "key_asset": "filter" },
+                            { "key_asset": "filter_asc" },
+                            { "key_asset": "filter_desc" }
+                          ]
                         }
                       }
                     ]
-                  }
-                },
-                {
-                  "key_component": "button",
-                  "enabled": true,
-                  "content": {
-                    "css_key": "Filled",
-                    "functions": {
-                      "lifecycle": ["function.navigation.page.publish_home"]
-                    },
-                    "text": "Home"
-                  }
-                },
-                {
-                  "key_component": "dashboard",
-                  "enabled": true,
-                  "content": {
-                    "functions": {
-                      "mount": [
-                        "function.dashboard.api.subscribe",
-                        "function.dashboard.api.publish",
-                        "function.dashboard.preferences.subscribe",
-                        "function.dashboard.preferences.publish_retrieve"
-                      ],
-                      "unmount": [
-                        "function.dashboard.api.unsubscribe",
-                        "function.dashboard.preferences.unsubscribe"
-                      ]
-                    }
                   }
                 },
                 {
@@ -163,7 +179,6 @@
       }
     },
     "modals": [],
-    "notices": [],
-    "assets": []
+    "notices": []
   }
 }

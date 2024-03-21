@@ -1,25 +1,35 @@
 :root {
-  --blue-color: #7f9bcd;
-  --dark-blue-color: #3759a4;
-  --light-blue-color: #d6e0f5;
-  --white-color: white;
-  --grey-color: #f0f0f0;
-  --dark-grey-color: #4d4d4d;
-  --border-radius: 5px;
-  --font-weight-bold: bold;
+  --corporate-dark-blue: #3759a4;
+  --corporate-light-blue: #6f8db3;
+  --corporate-grey: #d3d6d8;
+  --corporate-light-grey: #e6e9eb;
+  --corporate-cream: #f5f5f5;
+  --corporate-white: #ffffff;
+  --accent-color: #eb5e28;
+  --corporate-dark-grey: #333333;
+  --border-radius: 3px;
+  --shadow: rgba(0, 0, 0, 0.1);
+  --font-weight-bold: 700;
   --font-size-rem: 1rem;
-  --transition-speed: 0.8s;
+  --transition-speed: 0.3s;
 }
 
 * {
-  background-color: var(--light-blue-color);
-}
-
-[data-component="Component_Dashboard"] {
-  background-color: var(--white-color);
-  filter: drop-shadow(0 0 0.25rem var(--silver-color));
+  background-color: var(--corporate-light-grey);
 }
 
 [data-component="Component_Dashboard_Header"] {
-  background-color: var(--dark-blue-color);
+  background-color: var(--corporate-light-blue);
+  filter: drop-shadow(0 2px 4px var(--shadow));
+  color: var(--corporate-cream);
+}
+
+[data-component="Component_Dashboard_Row"] {
+  background-color: var(--corporate-cream);
+  border-color: var(--shadow);
+  filter: drop-shadow(0 2px 4px var(--shadow));
+}
+
+[data-component="Component_Dashboard_Row_Pseudo"] {
+  filter: drop-shadow(0 2px 4px var(--shadow));
 }

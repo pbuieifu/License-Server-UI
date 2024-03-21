@@ -21,8 +21,9 @@
   width: 100vw;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 button:hover {
@@ -31,9 +32,11 @@ button:hover {
 
 [data-component="Component_Header"],
 [data-component="Component_Footer"] {
+  background-color: transparent;
   position: fixed;
   height: 15vh;
   width: 100vw;
+  pointer-events: none;
 }
 
 [data-component="Component_Header"] {
@@ -46,11 +49,23 @@ button:hover {
   left: 0;
 }
 
+[data-css="dashboard_page_container"] {
+  max-height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
 [data-component="Component_Dashboard"] {
+  background-color: transparent;
   position: relative;
-  height: 60%;
+  flex-grow: 1;
   width: 80%;
-  border-radius: 15px;
+  border-radius: var(--border-radius);
+  overflow: hidden;
 }
 
 [data-component="Component_Dashboard_Header"] {
@@ -58,36 +73,74 @@ button:hover {
   display: flex;
   flex-direction: row;
   height: 60px;
-  width: 100%;
-  border-radius: 15px 15px 0 0;
+  width: calc(100% - 40px);
+  border-radius: var(--border-radius);
   padding: 12px 0;
+  margin: 20px;
+  z-index: 2;
 }
 
-[data-component="Component_Dashboard_Header_Button"] {
+[data-component="Component_Dashboard_Header_Item"] {
   white-space: nowrap;
   background-color: transparent;
   padding: 4px;
   overflow-y: hidden;
   overflow-x: auto;
+  position: relative;
+  padding: 10px 20px;
+}
+
+[data-component="Component_Dashboard_Header_Button"] {
+  position: absolute;
+  right: 10px;
 }
 
 [data-component="Component_Dashboard_Row_Container"] {
-  height: 100%;
+  background-color: transparent;
+  height: calc(100% - 60px);
   overflow-y: auto;
   overflow-x: hidden;
-  margin-top: 60px;
+  margin: 60px 0;
+  padding: 20px;
+  z-index: 1;
+
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+[data-component="Component_Dashboard_Row_Container"]::-webkit-scrollbar {
+  display: none;
 }
 
 [data-component="Component_Dashboard_Row"] {
   display: flex;
   flex-direction: row;
+  border: 1px solid;
+  border-radius: var(--border-radius);
 }
 
-[data-component="Component_Dashboard_Row_Button"] {
+[data-component="Component_Dashboard_Row_Item"] {
   white-space: nowrap;
   background-color: transparent;
-  padding: 10px;
+  padding: 20px;
   overflow-y: hidden;
   overflow-x: auto;
   height: 60px;
+}
+
+[data-component="Component_Dashboard_Row_Pseudo"] {
+  display: flex;
+  flex-direction: column;
+  margin: 20px 0;
+}
+
+[data-component="Component_Dashboard_Row_Panel"] {
+  height: 0;
+  overflow: hidden;
+  transition: height 0.5s ease-in-out;
+  background-color: var(--corporate-light-grey);
+}
+
+[data-component="Component_Dashboard_Row_Panel"].expanded {
+  height: 100px;
 }
