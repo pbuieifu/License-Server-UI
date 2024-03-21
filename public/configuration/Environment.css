@@ -47,17 +47,16 @@ button:hover {
 }
 
 [data-component="Component_Dashboard"] {
+  position: relative;
   height: 60%;
   width: 80%;
   border-radius: 15px;
 }
 
 [data-component="Component_Dashboard_Header"] {
-  position: fixed;
+  position: absolute;
   display: flex;
   flex-direction: row;
-  top: 0;
-  left: 0;
   height: 60px;
   width: 100%;
   border-radius: 15px 15px 0 0;

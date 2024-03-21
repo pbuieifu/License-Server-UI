@@ -207,9 +207,9 @@ export const Component_Dashboard = ({
         sortDirection={sortDirection}
       />
       <div data-component="Component_Dashboard_Row_Container">
-        {sortedData.map((row, index) => (
+        {sortedData.map((row) => (
           <Component_Dashboard_Row
-            key={row.id + index}
+            key={row.id}
             row={row}
             columns={columnData}
           />
