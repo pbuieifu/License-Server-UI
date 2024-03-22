@@ -222,6 +222,40 @@ const map_function: Map_Function = {
             });
         },
       },
+      assets: {
+        subscribe: (payload: Payload_Function_Data) => {
+          if (payload.handler_event)
+            payload.handler_event.subscribe(
+              "environment_answer",
+              (data: Payload_Answer) => {
+                if (payload.setResults)
+                  payload.setResults({
+                    key_event_subscription: [
+                      "environment_answer",
+                      data.key_call,
+                    ],
+                    data: data.data,
+                  });
+              }
+            );
+        },
+        unsubscribe: (payload: Payload_Function_Data) => {
+          if (payload.handler_event)
+            payload.handler_event.unsubscribe(
+              "environment_answer",
+              (data: Payload_Answer) => {
+                if (payload.setResults)
+                  payload.setResults({
+                    key_event_subscription: [
+                      "environment_answer",
+                      data.key_call,
+                    ],
+                    data: data.data,
+                  });
+              }
+            );
+        },
+      },
     },
   },
 };

@@ -150,11 +150,13 @@
                               "function.dashboard.api.subscribe",
                               "function.dashboard.api.publish",
                               "function.dashboard.preferences.subscribe",
-                              "function.dashboard.preferences.publish_retrieve"
+                              "function.dashboard.preferences.publish_retrieve",
+                              "function.dashboard.assets.subscribe"
                             ],
                             "unmount": [
                               "function.dashboard.api.unsubscribe",
-                              "function.dashboard.preferences.unsubscribe"
+                              "function.dashboard.preferences.unsubscribe",
+                              "function.dashboard.assets.unsubscribe"
                             ]
                           },
                           "assets": [
@@ -179,6 +181,13 @@
       }
     },
     "modals": [],
-    "notices": []
+    "notices": [],
+    "assets": {
+      "light_theme": [
+        { "key_asset": "filter", "url": "assets/images/filter.svg" },
+        { "key_asset": "filter_asc", "url": "assets/images/filter_asc.svg" },
+        { "key_asset": "filter_desc", "url": "assets/images/filter_desc.svg" }
+      ]
+    }
   }
 }

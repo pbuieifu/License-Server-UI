@@ -21,6 +21,11 @@ export interface Props_Component_Generic {
   data: Data_Component_Generic;
 }
 
+export interface Asset {
+  key_asset: string;
+  url?: string;
+}
+
 interface Data_Component_Rendered {
   key_call: string;
   json: Data_Component_Generic;
@@ -47,6 +52,7 @@ export interface Data_Component_Generic {
     };
     children?: Data_Component_Generic[];
     text?: string;
+    assets: Asset[];
   };
 }
 

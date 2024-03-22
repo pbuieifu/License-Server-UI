@@ -1,4 +1,4 @@
-import { Data_Component_Generic } from "../components/Component_Generic";
+import { Asset, Data_Component_Generic } from "../components/Component_Generic";
 import map_function, { Map_Function } from "../functions/Functions";
 import { Payload_Error } from "./Handler_Error";
 import Handler_Event, { Key_Events } from "./Handler_Event";
@@ -87,7 +87,7 @@ export default class Handler_Function {
     return data.data !== undefined && this.checkMatchedResult(payload, data);
   }
 
-  private cleanResults(payload: Payload_Function_Data, data: Payload_Result) {
+  public cleanResults(payload: Payload_Function_Data, data: Payload_Result) {
     if (
       payload.setResults !== undefined &&
       this.checkValidResult(payload, data)
@@ -149,6 +149,12 @@ export default class Handler_Function {
 
       return resultWithKeyCall;
     }
+  }
+
+  public extractAssetURLFromList(assets: Asset[], key_asset: string) {
+    const found_asset = assets.find((asset) => asset.key_asset === key_asset);
+
+    return found_asset ? found_asset.url : key_asset;
   }
 
   private generateMounts(

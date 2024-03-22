@@ -66,6 +66,7 @@ button:hover {
   width: 80%;
   border-radius: var(--border-radius);
   overflow: hidden;
+  user-select: none;
 }
 
 [data-component="Component_Dashboard_Header"] {
@@ -87,12 +88,25 @@ button:hover {
   overflow-y: hidden;
   overflow-x: auto;
   position: relative;
-  padding: 10px 20px;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 [data-component="Component_Dashboard_Header_Button"] {
   position: absolute;
   right: 10px;
+  background-color: transparent;
+  border: none;
+  height: 40px;
+  width: 40px;
+}
+
+[data-component="Component_Dashboard_Header_Button"] img {
+  background-color: transparent;
+  height: inherit;
+  width: inherit;
 }
 
 [data-component="Component_Dashboard_Row_Container"] {

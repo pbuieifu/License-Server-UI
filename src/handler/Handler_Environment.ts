@@ -3,7 +3,7 @@ import Handler_Event from "./Handler_Event";
 
 interface Payload_Environment {
   path: string[];
-  key_environment?: string;
+  key_environment?: string | string[];
 }
 
 interface Payload_Environment_Sanitized extends Payload_Environment {
@@ -43,11 +43,28 @@ export default class Handler_Environment {
       handler_environment.handler_event.subscribe(
         "environment_call",
         (payload: Payload_Environment_Call) => {
-          const answer = handler_environment.sanitizedObjectLookUp({
-            fallback: payload.fallback,
-            path: payload.path,
-            key_environment: payload.key_environment,
-          });
+          let answer = [];
+
+          if (typeof payload.key_environment === "string") {
+            answer.push(
+              handler_environment.sanitizedObjectLookUp({
+                fallback: payload.fallback,
+                path: payload.path,
+                key_environment: payload.key_environment,
+              })
+            );
+          } else {
+            payload.key_environment?.forEach((key: string) => {
+              answer.push(
+                handler_environment.sanitizedObjectLookUp({
+                  fallback: payload.fallback,
+                  path: payload.path,
+                  key_environment: key,
+                })
+              );
+            });
+          }
+
           handler_environment.handler_event.publish("environment_answer", {
             key_call: payload.key_call,
             data: answer,
@@ -88,6 +105,15 @@ export default class Handler_Environment {
     }
   }
 
+  private returnDataByKey(array_environment: any[], key_environment: string) {
+    return array_environment.find((obj) =>
+      Object.keys(obj).some(
+        (env_key) =>
+          env_key.startsWith("key_") && obj[env_key] === key_environment
+      )
+    );
+  }
+
   private objectLookUp(payload: Payload_Environment): any {
     // Traverse the JSON object using the path
     let env = this.environment;
@@ -101,14 +127,13 @@ export default class Handler_Environment {
       }
     }
 
-    if (Array.isArray(env) && payload.key_environment) {
+    if (Array.isArray(env) && payload.key_environment !== undefined) {
       // Search through the array for an object with the specific key-value pair
-      const foundObject = env.find((obj) =>
-        Object.keys(obj).some(
-          (env_key) =>
-            env_key.endsWith("_key") && obj[env_key] === payload.key_environment
-        )
+      const foundObject = this.returnDataByKey(
+        env,
+        payload.key_environment as string
       );
+
       return foundObject ? foundObject : undefined;
     } else {
       return env;

@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import { Props_Component_Rendered } from "./Component_Generic";
+import { Asset, Props_Component_Rendered } from "./Component_Generic";
 import { Payload_Result } from "../handler/Handler_Function";
 import {
   Data_Preferences_Column,
   Data_Preferences,
 } from "./Component_Preferences";
+import jsonEqual from "../helper/jsonEqual";
 
 type Directions = "asc" | "desc" | "none";
 
@@ -19,62 +20,11 @@ interface Data_Column {
 
 interface Component_Dashboard_Header_Item_Props {
   column: Data_Column;
-  sort: (column_key: string) => void;
-  isSortedColumn: boolean;
-  sortDirection: Directions;
 }
-
-const Component_Dashboard_Header_Item = ({
-  column,
-  sort,
-  isSortedColumn,
-  sortDirection,
-}: Component_Dashboard_Header_Item_Props) => {
-  return (
-    <div
-      key={column.key_column}
-      style={{ width: `${column.size}` }}
-      data-component="Component_Dashboard_Header_Item"
-    >
-      {column.key_column.charAt(0).toUpperCase() + column.key_column.slice(1)}
-      <button
-        data-component="Component_Dashboard_Header_Button"
-        onClick={() => sort(column.key_column)}
-      >
-        {isSortedColumn ? sortDirection : "none"}
-      </button>
-    </div>
-  );
-};
 
 interface Component_Dashboard_Header_Props {
   columns?: Data_Column[];
-  sort: (column_key: string) => void;
-  sortedColumn: string | null;
-  sortDirection: Directions;
 }
-
-const Component_Dashboard_Header = ({
-  columns,
-  sort,
-  sortedColumn,
-  sortDirection,
-}: Component_Dashboard_Header_Props) => {
-  return (
-    <div data-component="Component_Dashboard_Header">
-      {columns &&
-        columns.map((column) => (
-          <Component_Dashboard_Header_Item
-            key={column.key_column}
-            column={column}
-            sort={sort}
-            isSortedColumn={sortedColumn === column.key_column}
-            sortDirection={sortDirection}
-          />
-        ))}
-    </div>
-  );
-};
 
 interface Component_Dashboard_Row_Item_Props {
   row: Payload_API_Dashboard;
@@ -97,44 +47,7 @@ const Component_Dashboard_Row_Item = ({
 
 interface Component_Dashboard_Row_Props {
   row: Payload_API_Dashboard;
-  columns?: Data_Column[];
 }
-
-const Component_Dashboard_Row = ({
-  row,
-  columns,
-}: Component_Dashboard_Row_Props) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-
-  const toggleExpansion = () => {
-    setIsExpanded(!isExpanded);
-  };
-
-  return (
-    <div data-component="Component_Dashboard_Row_Pseudo" key={row.id}>
-      <div
-        data-component="Component_Dashboard_Row"
-        onClick={toggleExpansion}
-        style={{ cursor: "pointer" }}
-      >
-        {columns &&
-          columns.map((column) => (
-            <Component_Dashboard_Row_Item
-              key={row.id + column.key_column}
-              row={row}
-              column={column}
-            />
-          ))}
-      </div>
-      <div
-        className={isExpanded ? "expanded" : ""}
-        data-component="Component_Dashboard_Row_Panel"
-      >
-        Panel Content Here
-      </div>
-    </div>
-  );
-};
 
 export const Component_Dashboard = ({
   data,
@@ -143,7 +56,9 @@ export const Component_Dashboard = ({
   const [tableData, setTableData] = useState<Payload_API_Dashboard[]>([]);
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<Directions>("none");
+  const [preferences, setPreferences] = useState<Data_Preferences>();
   const [columnData, setColumnData] = useState<Data_Column[]>([]);
+  const [assets, setAssets] = useState<Asset[]>([]);
 
   const handleSortChange = (key_column: string) => {
     let newDirection: Directions = "none";
@@ -168,6 +83,12 @@ export const Component_Dashboard = ({
     });
   }, [tableData, sortColumn, sortDirection]);
 
+  const checkUpdatedPreferences = (result_preferences: Payload_Result) => {
+    return (
+      result_preferences && !jsonEqual(result_preferences.data, preferences)
+    );
+  };
+
   const gatherData = () => {
     const result_api: Payload_Result =
       data.handler_function.extractDataFromResult(
@@ -187,13 +108,15 @@ export const Component_Dashboard = ({
 
     let columns: Data_Column[] = [];
 
-    if (result_preferences) {
+    if (checkUpdatedPreferences(result_preferences)) {
       result_preferences.data.dashboard.columns.map(
         (column: Data_Preferences_Column) => {
           if (column.enabled)
             columns.push({ size: "", key_column: column.key_column });
         }
       );
+
+      setPreferences(result_preferences.data);
 
       setColumnData(
         columns.map((column) => ({
@@ -202,11 +125,146 @@ export const Component_Dashboard = ({
         }))
       );
     }
+
+    const result_assets: Payload_Result =
+      data.handler_function.extractDataFromResult(
+        "environment_answer",
+        data.key_call,
+        results
+      );
+
+    if (result_assets) setAssets(result_assets.data);
   };
 
   useEffect(() => {
     gatherData();
   }, [results]);
+
+  const gatherAssets = () => {
+    if (preferences) {
+      let key_array: string[] = [];
+
+      data.json.content.assets.forEach((asset: Asset) =>
+        key_array.push(asset.key_asset)
+      );
+
+      data.handler_event.publish("environment_call", {
+        key_call: data.key_call,
+        fallback: [],
+        path: ["subscriber_content", "assets", preferences.theme],
+        key_environment: key_array,
+      });
+    }
+  };
+
+  useEffect(() => {
+    gatherAssets();
+  }, [preferences]);
+
+  const Component_Dashboard_Header = ({}: Component_Dashboard_Header_Props) => {
+    return (
+      <div data-component="Component_Dashboard_Header">
+        {columnData &&
+          columnData.map((column) => (
+            <Component_Dashboard_Header_Item
+              key={column.key_column}
+              column={column}
+            />
+          ))}
+      </div>
+    );
+  };
+
+  const getSortDirectionImageUrl = () => {
+    switch (sortDirection) {
+      case "asc":
+        return data.handler_function.extractAssetURLFromList(
+          assets,
+          "filter_asc"
+        );
+      case "desc":
+        return data.handler_function.extractAssetURLFromList(
+          assets,
+          "filter_desc"
+        );
+      default:
+        return data.handler_function.extractAssetURLFromList(assets, "filter");
+    }
+  };
+
+  const Component_Dashboard_Header_Item = ({
+    column,
+  }: Component_Dashboard_Header_Item_Props) => {
+    const sortDirectionImageUrl = useMemo(() => {
+      if (sortColumn === column.key_column) {
+        switch (sortDirection) {
+          case "asc":
+            return data.handler_function.extractAssetURLFromList(
+              assets,
+              "filter_asc"
+            );
+          case "desc":
+            return data.handler_function.extractAssetURLFromList(
+              assets,
+              "filter_desc"
+            );
+          default:
+            return "";
+        }
+      }
+      return data.handler_function.extractAssetURLFromList(assets, "filter");
+    }, [sortColumn, sortDirection, column.key_column, assets]);
+
+    return (
+      <div
+        style={{ width: `${column.size}` }}
+        data-component="Component_Dashboard_Header_Item"
+      >
+        {column.key_column.charAt(0).toUpperCase() + column.key_column.slice(1)}
+        <button
+          data-component="Component_Dashboard_Header_Button"
+          onClick={() => handleSortChange(column.key_column)}
+        >
+          {sortDirectionImageUrl && (
+            <img src={sortDirectionImageUrl} alt="Sorting Icon" />
+          )}
+        </button>
+      </div>
+    );
+  };
+
+  const Component_Dashboard_Row = ({ row }: Component_Dashboard_Row_Props) => {
+    const [isExpanded, setIsExpanded] = useState(false);
+
+    const toggleExpansion = () => {
+      setIsExpanded(!isExpanded);
+    };
+
+    return (
+      <div data-component="Component_Dashboard_Row_Pseudo" key={row.id}>
+        <div
+          data-component="Component_Dashboard_Row"
+          onClick={toggleExpansion}
+          style={{ cursor: "pointer" }}
+        >
+          {columnData &&
+            columnData.map((column) => (
+              <Component_Dashboard_Row_Item
+                key={row.id + column.key_column}
+                row={row}
+                column={column}
+              />
+            ))}
+        </div>
+        <div
+          className={isExpanded ? "expanded" : ""}
+          data-component="Component_Dashboard_Row_Panel"
+        >
+          Panel Content Here
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div
@@ -214,19 +272,10 @@ export const Component_Dashboard = ({
       data-css={data.json.content.css_key}
       onClick={data.handleLifecycle}
     >
-      <Component_Dashboard_Header
-        columns={columnData}
-        sort={handleSortChange}
-        sortedColumn={sortColumn}
-        sortDirection={sortDirection}
-      />
+      <Component_Dashboard_Header />
       <div data-component="Component_Dashboard_Row_Container">
         {sortedData.map((row) => (
-          <Component_Dashboard_Row
-            key={row.id}
-            row={row}
-            columns={columnData}
-          />
+          <Component_Dashboard_Row key={row.id} row={row} />
         ))}
       </div>
     </div>
