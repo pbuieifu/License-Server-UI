@@ -76,7 +76,7 @@ button:hover {
   height: 60px;
   width: calc(100% - 40px);
   border-radius: var(--border-radius);
-  padding: 12px 0;
+
   margin: 20px;
   z-index: 2;
 }
@@ -92,6 +92,7 @@ button:hover {
   display: flex;
   flex-direction: row;
   align-items: center;
+  height: 100%;
 }
 
 [data-component="Component_Dashboard_Header_Button"] {

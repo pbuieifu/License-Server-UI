@@ -24,13 +24,21 @@
   color: var(--corporate-cream);
 }
 
+[data-component="Component_Dashboard_Header_Item"] {
+  box-shadow: 0px 2px 4px var(--shadow);
+}
+
+[data-component="Component_Dashboard_Row_Pseudo"] {
+  background-color: var(--corporate-grey);
+  filter: drop-shadow(0 2px 4px var(--shadow));
+}
+
 [data-component="Component_Dashboard_Row"] {
   background-color: var(--corporate-cream);
   border-color: var(--shadow);
   filter: drop-shadow(0 2px 4px var(--shadow));
 }
 
-[data-component="Component_Dashboard_Row_Pseudo"] {
-  background-color: var(--corporate-grey);
-  filter: drop-shadow(0 2px 4px var(--shadow));
+[data-component="Component_Dashboard_Row_Item"] {
+  box-shadow: 0px 2px 4px var(--shadow);
 }
