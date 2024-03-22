@@ -76,7 +76,6 @@ button:hover {
   height: 60px;
   width: calc(100% - 40px);
   border-radius: var(--border-radius);
-
   margin: 20px;
   z-index: 2;
 }
@@ -153,7 +152,10 @@ button:hover {
   height: 0;
   overflow: hidden;
   transition: height 0.5s ease-in-out;
-  background-color: var(--corporate-light-grey);
+}
+
+[data-component="Component_Dashboard_Row_Panel_Content"] {
+  margin: 20px;
 }
 
 [data-component="Component_Dashboard_Row_Panel"].expanded {

@@ -42,3 +42,7 @@
 [data-component="Component_Dashboard_Row_Item"] {
   box-shadow: 0px 2px 4px var(--shadow);
 }
+
+[data-component="Component_Dashboard_Row_Panel"] {
+  background-color: var(--corporate-light-grey);
+}
