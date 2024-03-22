@@ -175,23 +175,6 @@ export const Component_Dashboard = ({
     );
   };
 
-  const getSortDirectionImageUrl = () => {
-    switch (sortDirection) {
-      case "asc":
-        return data.handler_function.extractAssetURLFromList(
-          assets,
-          "filter_asc"
-        );
-      case "desc":
-        return data.handler_function.extractAssetURLFromList(
-          assets,
-          "filter_desc"
-        );
-      default:
-        return data.handler_function.extractAssetURLFromList(assets, "filter");
-    }
-  };
-
   const Component_Dashboard_Header_Item = ({
     column,
   }: Component_Dashboard_Header_Item_Props) => {
