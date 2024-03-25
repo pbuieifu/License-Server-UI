@@ -6,12 +6,18 @@ import {
   Data_Preferences,
 } from "./Component_Preferences";
 import jsonEqual from "../helper/jsonEqual";
+import { daysRemaining } from "../helper/daysRemaining";
 
 type Directions = "asc" | "desc" | "none";
 
-export type Payload_API_Dashboard = {
-  [key: string]: any;
-};
+export interface Payload_API_Dashboard {
+  license_key: string;
+  client_name: string;
+  product_name: string;
+  product_version: string;
+  purchase_date: Date;
+  expire_date: Date;
+}
 
 interface Data_Column {
   size: string;
@@ -27,9 +33,13 @@ interface Component_Dashboard_Header_Props {
 }
 
 interface Component_Dashboard_Row_Item_Props {
-  row: Payload_API_Dashboard;
+  row: Data_Row_Displayed;
   column: Data_Column;
 }
+
+type Data_Row_Displayed = {
+  [key: string]: string | number;
+};
 
 const Component_Dashboard_Row_Item = ({
   row,
@@ -46,14 +56,14 @@ const Component_Dashboard_Row_Item = ({
 };
 
 interface Component_Dashboard_Row_Props {
-  row: Payload_API_Dashboard;
+  row: Data_Row_Displayed;
 }
 
 export const Component_Dashboard = ({
   data,
   results,
 }: Props_Component_Rendered) => {
-  const [tableData, setTableData] = useState<Payload_API_Dashboard[]>([]);
+  const [tableData, setTableData] = useState<Data_Row_Displayed[]>([]);
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<Directions>("none");
   const [preferences, setPreferences] = useState<Data_Preferences>();
@@ -74,6 +84,7 @@ export const Component_Dashboard = ({
 
   const sortedData = useMemo(() => {
     if (!sortColumn) return tableData;
+
     return [...tableData].sort((a, b) => {
       if (a[sortColumn] < b[sortColumn])
         return sortDirection === "asc" ? -1 : 1;
@@ -97,7 +108,32 @@ export const Component_Dashboard = ({
         results
       );
 
-    if (result_api) setTableData(result_api.data);
+    if (result_api) {
+      let data_table: Data_Row_Displayed[] = [];
+
+      result_api.data.forEach((data_row: Payload_API_Dashboard) => {
+        let row_display: Data_Row_Displayed = {
+          license_key: data_row.license_key,
+          client_name: data_row.client_name,
+          product_name: data_row.product_name,
+          product_version: data_row.product_version,
+          status: JSON.stringify(
+            daysRemaining(data_row.purchase_date, data_row.expire_date) <= 0
+          ),
+          time_left: daysRemaining(
+            data_row.purchase_date,
+            data_row.expire_date
+          ),
+          action_required: JSON.stringify(
+            daysRemaining(data_row.purchase_date, data_row.expire_date) <= 0
+          ),
+        };
+
+        data_table.push(row_display);
+      });
+
+      setTableData(data_table);
+    }
 
     const result_preferences: Payload_Result =
       data.handler_function.extractDataFromResult(
@@ -224,7 +260,10 @@ export const Component_Dashboard = ({
     };
 
     return (
-      <div data-component="Component_Dashboard_Row_Pseudo" key={row.id}>
+      <div
+        data-component="Component_Dashboard_Row_Pseudo"
+        key={row.license_key}
+      >
         <div
           data-component="Component_Dashboard_Row"
           onClick={toggleExpansion}
@@ -267,7 +306,7 @@ export const Component_Dashboard = ({
       <Component_Dashboard_Header />
       <div data-component="Component_Dashboard_Row_Container">
         {sortedData.map((row) => (
-          <Component_Dashboard_Row key={row.id} row={row} />
+          <Component_Dashboard_Row key={row.license_key} row={row} />
         ))}
       </div>
     </div>
