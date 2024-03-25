@@ -100,15 +100,8 @@ export const Component_Dashboard = ({
     );
   };
 
-  const gatherData = () => {
-    const result_api: Payload_Result =
-      data.handler_function.extractDataFromResult(
-        "api_answer",
-        data.key_call,
-        results
-      );
-
-    if (result_api) {
+  const parseAPIResults = (result_api: Payload_Result) => {
+    {
       let data_table: Data_Row_Displayed[] = [];
 
       result_api.data.forEach((data_row: Payload_API_Dashboard) => {
@@ -134,14 +127,9 @@ export const Component_Dashboard = ({
 
       setTableData(data_table);
     }
+  };
 
-    const result_preferences: Payload_Result =
-      data.handler_function.extractDataFromResult(
-        "retrieve_answer",
-        data.key_call,
-        results
-      );
-
+  const parsePreferencesResult = (result_preferences: Payload_Result) => {
     let columns: Data_Column[] = [];
 
     if (checkUpdatedPreferences(result_preferences)) {
@@ -161,6 +149,29 @@ export const Component_Dashboard = ({
         }))
       );
     }
+  };
+
+  const parseAssetsResults = (result_assets: Payload_Result) =>
+    setAssets(result_assets.data);
+
+  const gatherData = () => {
+    const result_api: Payload_Result =
+      data.handler_function.extractDataFromResult(
+        "api_answer",
+        data.key_call,
+        results
+      );
+
+    if (result_api) parseAPIResults(result_api);
+
+    const result_preferences: Payload_Result =
+      data.handler_function.extractDataFromResult(
+        "retrieve_answer",
+        data.key_call,
+        results
+      );
+
+    if (result_preferences) parsePreferencesResult(result_preferences);
 
     const result_assets: Payload_Result =
       data.handler_function.extractDataFromResult(
@@ -169,7 +180,7 @@ export const Component_Dashboard = ({
         results
       );
 
-    if (result_assets) setAssets(result_assets.data);
+    if (result_assets) parseAssetsResults(result_assets);
   };
 
   useEffect(() => {
