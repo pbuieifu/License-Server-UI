@@ -6,17 +6,19 @@ import {
   Data_Preferences,
 } from "./Component_Preferences";
 import jsonEqual from "../helper/jsonEqual";
-import { daysRemaining } from "../helper/daysRemaining";
 
 type Directions = "asc" | "desc" | "none";
 
 export interface Payload_API_Dashboard {
-  license_key: string;
-  client_name: string;
-  product_name: string;
-  product_version: string;
-  purchase_date: Date;
-  expire_date: Date;
+  ClientName: string;
+  ProductName: string;
+  License: string;
+  MaxDeployments: number;
+  CurrentDeployments: number;
+  Enabled: boolean;
+  AgreementAccepted: boolean;
+  Expired: boolean;
+  InGracePeriod: boolean;
 }
 
 interface Data_Column {
@@ -64,8 +66,8 @@ export const Component_Dashboard = ({
   results,
 }: Props_Component_Rendered) => {
   const [tableData, setTableData] = useState<Data_Row_Displayed[]>([]);
-  const [sortColumn, setSortColumn] = useState<string | null>(null);
-  const [sortDirection, setSortDirection] = useState<Directions>("none");
+  const [sortColumn, setSortColumn] = useState<string>("status");
+  const [sortDirection, setSortDirection] = useState<Directions>("asc");
   const [preferences, setPreferences] = useState<Data_Preferences>();
   const [columnData, setColumnData] = useState<Data_Column[]>([]);
   const [assets, setAssets] = useState<Asset[]>([]);
@@ -106,20 +108,15 @@ export const Component_Dashboard = ({
 
       result_api.data.forEach((data_row: Payload_API_Dashboard) => {
         let row_display: Data_Row_Displayed = {
-          license_key: data_row.license_key,
-          client_name: data_row.client_name,
-          product_name: data_row.product_name,
-          product_version: data_row.product_version,
-          status: JSON.stringify(
-            daysRemaining(data_row.purchase_date, data_row.expire_date) <= 0
-          ),
-          time_left: daysRemaining(
-            data_row.purchase_date,
-            data_row.expire_date
-          ),
-          action_required: JSON.stringify(
-            daysRemaining(data_row.purchase_date, data_row.expire_date) <= 0
-          ),
+          license_key: data_row.License,
+          client_name: data_row.ClientName,
+          product_name: data_row.ProductName,
+          status: data_row.Enabled && !data_row.Expired ? "Good" : "Bad",
+          action_required:
+            data_row.AgreementAccepted &&
+            !(data_row.InGracePeriod || data_row.Expired)
+              ? "No"
+              : "Yes",
         };
 
         data_table.push(row_display);
@@ -283,7 +280,7 @@ export const Component_Dashboard = ({
           {columnData &&
             columnData.map((column) => (
               <Component_Dashboard_Row_Item
-                key={row.id + column.key_column}
+                key={row.license_key + column.key_column}
                 row={row}
                 column={column}
               />
@@ -297,7 +294,7 @@ export const Component_Dashboard = ({
             {columnData &&
               columnData.map((column) => (
                 <Component_Dashboard_Row_Item
-                  key={row.id + column.key_column}
+                  key={row.license_key + column.key_column}
                   row={row}
                   column={column}
                 />

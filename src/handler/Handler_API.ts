@@ -1,11 +1,17 @@
-import { Payload_API_Dashboard } from "../components/Component_Dashboard";
-import { Data_Preferences } from "../components/Component_Preferences";
 import { parseLocalStorageItem } from "../helper/Local_Storage";
 import { stringToBoolean } from "../helper/stringToBoolean";
 import { Payload_Error } from "./Handler_Error";
 import Handler_Event from "./Handler_Event";
 
 type Key_API_Types = "preferences" | "dashboard" | "test";
+
+interface Payload_API_Answer {
+  Data: any;
+  Status: {
+    Code: number;
+    Message: string;
+  };
+}
 
 interface Status {
   [key: string]: number;
@@ -75,71 +81,104 @@ export default class Handler_API {
   }
 
   private getPreferences(payload: Payload_API_Call) {
-    const answer: Data_Preferences = {
-      theme: "light_theme",
-      dashboard: {
-        columns: [
-          { key_column: "license_key", enabled: true },
-          { key_column: "client_name", enabled: true },
-          { key_column: "product_name", enabled: true },
-          { key_column: "product_version", enabled: true },
-          { key_column: "status", enabled: true },
-          { key_column: "time_left", enabled: true },
-          { key_column: "action_required", enabled: true },
-        ],
+    const answer: Payload_API_Answer = {
+      Data: {
+        theme: "light_theme",
+        dashboard: {
+          columns: [
+            { key_column: "license_key", enabled: true },
+            { key_column: "client_name", enabled: true },
+            { key_column: "product_name", enabled: true },
+            { key_column: "status", enabled: true },
+            { key_column: "action_required", enabled: true },
+          ],
+        },
+      },
+      Status: {
+        Code: 0,
+        Message: "Success",
       },
     };
 
-    this.newAnswer(payload, answer);
+    this.newAnswer(payload, answer.Data);
   }
 
   private getDashboard(payload: Payload_API_Call) {
-    const answer: Payload_API_Dashboard[] = [
-      {
-        license_key: "qVXHqKdW",
-        client_name: "clien22t",
-        product_name: "2product",
-        product_version: "2.0.0.3",
-        purchase_date: new Date("2024-03-25T12:45:00.000Z"),
-        expire_date: new Date("2025-02-23T12:45:00.000Z"),
-      },
-      {
-        license_key: "n5lJ81IW",
-        client_name: "client",
-        product_name: "product",
-        product_version: "2.0.0.0",
+    const answer: Payload_API_Answer = {
+      Data: [
+        {
+          ClientName: "Umbrella Corp",
+          ProductName: "HyperDrive",
+          License: "27BSVU54",
+          MaxDeployments: 25,
+          CurrentDeployments: 13,
+          Enabled: true,
+          AgreementAccepted: true,
+          Expired: false,
+          InGracePeriod: true,
+        },
+        {
+          ClientName: "Acme Corporation",
+          ProductName: "HyperDrive",
+          License: "DZRNU4Q1",
+          MaxDeployments: 10,
+          CurrentDeployments: 8,
+          Enabled: true,
+          AgreementAccepted: false,
+          Expired: true,
+          InGracePeriod: false,
+        },
+        {
+          ClientName: "Globex Inc.",
+          ProductName: "SuperWidget",
+          License: "1FBJM16B",
+          MaxDeployments: 50,
+          CurrentDeployments: 3,
+          Enabled: false,
+          AgreementAccepted: false,
+          Expired: false,
+          InGracePeriod: false,
+        },
+        {
+          ClientName: "Umbrella Corp",
+          ProductName: "SuperWidget",
+          License: "I93K5EVB",
+          MaxDeployments: 10,
+          CurrentDeployments: 10,
+          Enabled: false,
+          AgreementAccepted: true,
+          Expired: true,
+          InGracePeriod: true,
+        },
+        {
+          ClientName: "Globex Inc.",
+          ProductName: "QuantumAccelerator",
+          License: "J8WBWH3I",
+          MaxDeployments: 25,
+          CurrentDeployments: 10,
+          Enabled: true,
+          AgreementAccepted: false,
+          Expired: true,
+          InGracePeriod: false,
+        },
 
-        purchase_date: new Date("2024-03-25T12:45:00.000Z"),
-        expire_date: new Date("2025-01-24T12:45:00.000Z"),
+        {
+          ClientName: "Test Client",
+          ProductName: "Test Product",
+          License: "EWR2230X",
+          MaxDeployments: 15,
+          CurrentDeployments: 1,
+          Enabled: true,
+          AgreementAccepted: true,
+          Expired: false,
+          InGracePeriod: false,
+        },
+      ],
+      Status: {
+        Code: 0,
+        Message: "Success",
       },
-      {
-        license_key: "uTH6sdB2",
-        client_name: "client1",
-        product_name: "product2",
-        product_version: "1.0.0.1",
-
-        purchase_date: new Date("2024-03-25T12:45:00.000Z"),
-        expire_date: new Date("2025-02-01T12:45:00.000Z"),
-      },
-      {
-        license_key: "iXtPuz39",
-        client_name: "client",
-        product_name: "product3",
-        product_version: "1.0.4.0",
-
-        purchase_date: new Date(),
-        expire_date: new Date(),
-      },
-      {
-        license_key: "T0FAejQG",
-        client_name: "client4",
-        product_name: "product",
-        product_version: "1.0.0.2",
-
-        purchase_date: new Date("2024-03-25T12:45:00.000Z"),
-        expire_date: new Date("2025-02-25T12:45:00.000Z"),
-      },
-    ];
-    this.newAnswer(payload, answer);
+    };
+    this.newAnswer(payload, answer.Data);
   }
 }
