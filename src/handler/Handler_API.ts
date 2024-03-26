@@ -188,14 +188,14 @@ export default class Handler_API {
   }
 
   private getProduct(payload: Payload_API_Call) {
-    console.log(payload);
     const answer: Payload_API_Answer = {
-      Data: {},
+      Data: { test: "hi" },
       Status: {
         Code: 0,
         Message: "Success",
       },
     };
+
     this.newAnswer(payload, { key_api: payload.key_api, data: answer.Data });
   }
 }

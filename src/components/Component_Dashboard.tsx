@@ -103,29 +103,40 @@ export const Component_Dashboard = ({
     );
   };
 
+  const parseLicenses = (data_result: Payload_API_Dashboard[]) => {
+    let data_table: Data_Row_Displayed[] = [];
+
+    data_result.forEach((data_row: Payload_API_Dashboard) => {
+      let row_display: Data_Row_Displayed = {
+        license_key: data_row.License,
+        client_name: data_row.ClientName,
+        product_name: data_row.ProductName,
+        status: data_row.Enabled && !data_row.Expired ? "Good" : "Bad",
+        action_required:
+          data_row.AgreementAccepted &&
+          !(data_row.InGracePeriod || data_row.Expired)
+            ? "No"
+            : "Yes",
+      };
+
+      data_table.push(row_display);
+    });
+
+    setTableData(data_table);
+  };
+
   const parseAPIResults = (result_api: Payload_Result) => {
-    {
-      console.log(result_api);
-
-      let data_table: Data_Row_Displayed[] = [];
-
-      result_api.data.forEach((data_row: Payload_API_Dashboard) => {
-        let row_display: Data_Row_Displayed = {
-          license_key: data_row.License,
-          client_name: data_row.ClientName,
-          product_name: data_row.ProductName,
-          status: data_row.Enabled && !data_row.Expired ? "Good" : "Bad",
-          action_required:
-            data_row.AgreementAccepted &&
-            !(data_row.InGracePeriod || data_row.Expired)
-              ? "No"
-              : "Yes",
-        };
-
-        data_table.push(row_display);
-      });
-
-      setTableData(data_table);
+    switch (result_api.data.key_api) {
+      case "dashboard_licenses":
+        parseLicenses(result_api.data.data);
+        break;
+      /*       case "dashboard_product":
+        setPanelData((prevItems) => [...prevItems, result_api.data.data]);
+        console.log(result_api.data.data);
+        break; */
+      default:
+        console.log(result_api);
+        break;
     }
   };
 
@@ -267,8 +278,8 @@ export const Component_Dashboard = ({
     const [isExpanded, setIsExpanded] = useState(false);
 
     const toggleExpansion = () => {
+      //data.handleLifecycle(row.license_key);
       setIsExpanded(!isExpanded);
-      data.handleLifecycle(row.license_key);
     };
 
     const findPanelData = () => {
@@ -312,7 +323,6 @@ export const Component_Dashboard = ({
     <div
       data-component="Component_Dashboard"
       data-css={data.json.content.css_key}
-      onClick={data.handleLifecycle}
     >
       <Component_Dashboard_Header />
       <div data-component="Component_Dashboard_Row_Container">
