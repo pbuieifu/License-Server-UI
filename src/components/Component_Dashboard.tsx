@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Asset, Props_Component_Rendered } from "./Component_Generic";
-import Handler_Function, { Payload_Result } from "../handler/Handler_Function";
+import { Payload_Result } from "../handler/Handler_Function";
 import {
   Data_Preferences_Column,
   Data_Preferences,
@@ -26,75 +26,30 @@ interface Data_Column {
   key_column: string;
 }
 
-interface Component_Dashboard_Header_Item_Props {
+interface Props_Component_Dashboard_Header_Item {
   column: Data_Column;
-  sortColumn: string;
-  sortDirection: Directions;
-  handler_function: Handler_Function;
-  assets: Asset[];
-  handleSortChange: (key_column: string) => void;
 }
 
 const Component_Dashboard_Header_Item = ({
   column,
-  sortColumn,
-  sortDirection,
-  handler_function,
-  assets,
-  handleSortChange,
-}: Component_Dashboard_Header_Item_Props) => {
-  const sortDirectionImageUrl = useMemo(() => {
-    if (sortColumn === column.key_column) {
-      switch (sortDirection) {
-        case "asc":
-          return handler_function.extractAssetURLFromList(assets, "filter_asc");
-        case "desc":
-          return handler_function.extractAssetURLFromList(
-            assets,
-            "filter_desc"
-          );
-        default:
-          return "";
-      }
-    }
-    return handler_function.extractAssetURLFromList(assets, "filter");
-  }, [sortColumn, sortDirection, column.key_column, assets]);
-
+}: Props_Component_Dashboard_Header_Item) => {
   return (
     <div
       style={{ width: `${column.size}` }}
       data-component="Component_Dashboard_Header_Item"
     >
       {column.key_column.charAt(0).toUpperCase() + column.key_column.slice(1)}
-      <button
-        data-component="Component_Dashboard_Header_Button"
-        onClick={() => handleSortChange(column.key_column)}
-      >
-        {sortDirectionImageUrl && (
-          <img src={sortDirectionImageUrl} alt="Sorting Icon" />
-        )}
-      </button>
     </div>
   );
 };
 
-interface Component_Dashboard_Header_Props {
+interface Props_Component_Dashboard_Header {
   columnData: Data_Column[];
-  sortColumn: string;
-  sortDirection: Directions;
-  handler_function: Handler_Function;
-  assets: Asset[];
-  handleSortChange: (key_column: string) => void;
 }
 
 const Component_Dashboard_Header = ({
   columnData,
-  sortColumn,
-  sortDirection,
-  handler_function,
-  assets,
-  handleSortChange,
-}: Component_Dashboard_Header_Props) => {
+}: Props_Component_Dashboard_Header) => {
   return (
     <div data-component="Component_Dashboard_Header">
       {columnData &&
@@ -102,18 +57,13 @@ const Component_Dashboard_Header = ({
           <Component_Dashboard_Header_Item
             key={column.key_column}
             column={column}
-            sortColumn={sortColumn}
-            sortDirection={sortDirection}
-            handler_function={handler_function}
-            assets={assets}
-            handleSortChange={handleSortChange}
           />
         ))}
     </div>
   );
 };
 
-interface Component_Dashboard_Row_Item_Props {
+interface Props_Component_Dashboard_Row_Item {
   row: Data_Row_Displayed;
   column: Data_Column;
 }
@@ -125,7 +75,7 @@ type Data_Row_Displayed = {
 const Component_Dashboard_Row_Item = ({
   row,
   column,
-}: Component_Dashboard_Row_Item_Props) => {
+}: Props_Component_Dashboard_Row_Item) => {
   return (
     <div
       style={{ width: `${column.size}` }}
@@ -136,7 +86,7 @@ const Component_Dashboard_Row_Item = ({
   );
 };
 
-interface Component_Dashboard_Row_Props {
+interface Props_Component_Dashboard_Row {
   row: Data_Row_Displayed;
   handleLifecycle: (input: any) => void;
   panelData: any[];
@@ -148,7 +98,7 @@ const Component_Dashboard_Row = ({
   handleLifecycle,
   panelData,
   columnData,
-}: Component_Dashboard_Row_Props) => {
+}: Props_Component_Dashboard_Row) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [contentData, setContentData] = useState<any>();
 
@@ -167,11 +117,14 @@ const Component_Dashboard_Row = ({
 
   useEffect(() => {
     panelToContentData();
-    console.log(panelData);
   }, [panelData]);
 
   return (
-    <div data-component="Component_Dashboard_Row_Pseudo" key={row.license_key}>
+    <div
+      data-component="Component_Dashboard_Row_Pseudo"
+      data-level={row.status}
+      key={row.license_key}
+    >
       <div
         data-component="Component_Dashboard_Row"
         onClick={toggleExpansion}
@@ -198,46 +151,181 @@ const Component_Dashboard_Row = ({
   );
 };
 
+interface Data_Sort_Criteria {
+  key_column: string;
+  direction: Directions;
+  enabled: boolean;
+}
+
+interface Props_Component_Sort_Modal {
+  columnData: Data_Column[];
+  onSave: (criteria: Data_Sort_Criteria[]) => void;
+}
+
+const Component_Sort_Modal = ({
+  columnData,
+  onSave,
+}: Props_Component_Sort_Modal) => {
+  const [localSortCriteria, setLocalSortCriteria] = useState<
+    Data_Sort_Criteria[]
+  >([]);
+
+  const handleDragStart = (
+    e: { dataTransfer: { setData: (arg0: string, arg1: any) => void } },
+    index: any
+  ) => {
+    e.dataTransfer.setData("text/plain", index);
+  };
+
+  const handleDrop = (
+    e: {
+      preventDefault: () => void;
+      dataTransfer: { getData: (arg0: string) => string };
+    },
+    targetIndex: number
+  ) => {
+    e.preventDefault();
+    const sourceIndex = parseInt(e.dataTransfer.getData("text/plain"), 10);
+    setLocalSortCriteria((current) => {
+      const item = current[sourceIndex];
+      const updatedList = [...current];
+      updatedList.splice(sourceIndex, 1); // Remove item from its original position
+      updatedList.splice(targetIndex, 0, item); // Insert item in its new position
+      return updatedList;
+    });
+  };
+
+  const handleDragOver = (e: { preventDefault: () => void }) => {
+    e.preventDefault(); // Necessary to allow dropping
+  };
+
+  const updateSortCriterion = (index: number, direction: Directions) => {
+    setLocalSortCriteria((current) =>
+      current.map((criterion, i) =>
+        i === index ? { ...criterion, direction } : criterion
+      )
+    );
+  };
+
+  const parseColumns = () => {
+    let data_sort: any[] = [];
+
+    columnData.map((column) =>
+      data_sort.push({
+        key_column: column.key_column,
+        direction: "asc",
+        enabled: false,
+      })
+    );
+
+    if (data_sort.length > 0) setLocalSortCriteria(data_sort);
+  };
+
+  useEffect(() => {
+    parseColumns();
+  }, [columnData]);
+
+  return (
+    <div>
+      {localSortCriteria.map((criterion, index) => (
+        <div
+          key={index}
+          draggable
+          onDragStart={(e) => handleDragStart(e, index)}
+          onDrop={(e) => handleDrop(e, index)}
+          onDragOver={handleDragOver}
+          style={{
+            cursor: "grab",
+            padding: "10px",
+            border: "1px solid #ccc",
+            marginBottom: "5px",
+          }} // Basic styling for visibility
+        >
+          <input
+            type="checkbox"
+            checked={criterion.enabled}
+            onChange={() =>
+              setLocalSortCriteria((current) =>
+                current.map((item, i) =>
+                  i === index ? { ...item, enabled: !item.enabled } : item
+                )
+              )
+            }
+          />
+          <span>{criterion.key_column}</span>
+          <button
+            onClick={() => updateSortCriterion(index, "asc")}
+            disabled={!criterion.enabled}
+            style={{
+              background: criterion.direction === "asc" ? "#4CAF50" : "#f1f1f1",
+              color: criterion.direction === "asc" ? "white" : "black",
+            }}
+          >
+            Asc
+          </button>
+          <button
+            onClick={() => updateSortCriterion(index, "desc")}
+            disabled={!criterion.enabled}
+            style={{
+              background:
+                criterion.direction === "desc" ? "#f44336" : "#f1f1f1",
+              color: criterion.direction === "desc" ? "white" : "black",
+            }}
+          >
+            Desc
+          </button>
+        </div>
+      ))}
+      <button onClick={() => onSave(localSortCriteria)}>Save</button>
+    </div>
+  );
+};
+
 export const Component_Dashboard = ({
   data,
   results,
 }: Props_Component_Rendered) => {
   const [tableData, setTableData] = useState<Data_Row_Displayed[]>([]);
-  const [sortColumn, setSortColumn] = useState<string>("status");
-  const [sortDirection, setSortDirection] = useState<Directions>("asc");
   const [preferences, setPreferences] = useState<Data_Preferences>();
   const [columnData, setColumnData] = useState<Data_Column[]>([]);
   const [panelData, setPanelData] = useState<any[]>([]);
   const [assets, setAssets] = useState<Asset[]>([]);
+  const [sortCriteria, setSortCriteria] = useState<Data_Sort_Criteria[]>([]);
 
-  const handleSortChange = (key_column: string) => {
-    let newDirection: Directions = "none";
-    if (sortColumn === key_column) {
-      newDirection = sortDirection === "asc" ? "desc" : "asc";
-    } else {
-      newDirection = "asc";
-    }
-
-    setSortColumn(key_column);
-    setSortDirection(newDirection);
+  const handleSaveSortCriteria = (newCriteria: Data_Sort_Criteria[]) => {
+    setSortCriteria(newCriteria);
   };
 
   const sortedData = useMemo(() => {
-    if (!sortColumn) return tableData;
+    // Filter for only enabled criteria
+    const activeCriteria = sortCriteria.filter(
+      (criterion) => criterion.enabled
+    );
 
     return [...tableData].sort((a, b) => {
-      if (a[sortColumn] < b[sortColumn])
-        return sortDirection === "asc" ? -1 : 1;
-      if (a[sortColumn] > b[sortColumn])
-        return sortDirection === "asc" ? 1 : -1;
+      for (let criterion of activeCriteria) {
+        if (a[criterion.key_column] < b[criterion.key_column]) {
+          return criterion.direction === "asc" ? -1 : 1;
+        } else if (a[criterion.key_column] > b[criterion.key_column]) {
+          return criterion.direction === "asc" ? 1 : -1;
+        }
+      }
       return 0;
     });
-  }, [tableData, sortColumn, sortDirection]);
+  }, [tableData, sortCriteria]); // Notice the dependency is on sortCriteria now
 
   const checkUpdatedPreferences = (result_preferences: Payload_Result) => {
     return (
       result_preferences && !jsonEqual(result_preferences.data, preferences)
     );
+  };
+
+  const determineStatus = (data_row: Payload_API_Dashboard) => {
+    if (data_row.Enabled && !data_row.InGracePeriod) return "0Red";
+
+    if (data_row.Enabled && data_row.InGracePeriod) return "1Orange";
+
+    return "3Green";
   };
 
   const parseLicenses = (data_result: Payload_API_Dashboard[]) => {
@@ -248,7 +336,7 @@ export const Component_Dashboard = ({
         license_key: data_row.License,
         client_name: data_row.ClientName,
         product_name: data_row.ProductName,
-        status: data_row.Enabled && !data_row.Expired ? "Good" : "Bad",
+        status: determineStatus(data_row),
         action_required:
           data_row.AgreementAccepted &&
           !(data_row.InGracePeriod || data_row.Expired)
@@ -363,14 +451,11 @@ export const Component_Dashboard = ({
       data-component="Component_Dashboard"
       data-css={data.json.content.css_key}
     >
-      <Component_Dashboard_Header
+      <Component_Sort_Modal
         columnData={columnData}
-        sortColumn={sortColumn}
-        sortDirection={sortDirection}
-        handler_function={data.handler_function}
-        assets={assets}
-        handleSortChange={handleSortChange}
+        onSave={handleSaveSortCriteria}
       />
+      <Component_Dashboard_Header columnData={columnData} />
       <div data-component="Component_Dashboard_Row_Container">
         {sortedData.map((row) => (
           <Component_Dashboard_Row

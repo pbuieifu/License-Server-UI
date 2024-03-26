@@ -46,3 +46,13 @@
 [data-component="Component_Dashboard_Row_Panel"] {
   background-color: var(--corporate-light-grey);
 }
+
+[data-level="0Red"] {
+  color: red;
+  filter: drop-shadow(0 2px 4px red);
+}
+
+[data-level="1Orange"] {
+  color: orange;
+  filter: drop-shadow(0 2px 4px orange);
+}
