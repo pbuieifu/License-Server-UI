@@ -3,7 +3,11 @@ import { stringToBoolean } from "../helper/stringToBoolean";
 import { Payload_Error } from "./Handler_Error";
 import Handler_Event from "./Handler_Event";
 
-type Key_API_Types = "preferences" | "dashboard" | "test";
+type Key_API_Types =
+  | "preferences"
+  | "dashboard_licenses"
+  | "dashboard_product"
+  | "test";
 
 interface Payload_API_Answer {
   Data: any;
@@ -34,7 +38,8 @@ export default class Handler_API {
   };
   private API_Map: Record<Key_API_Types, Function> = {
     preferences: this.getPreferences,
-    dashboard: this.getDashboard,
+    dashboard_licenses: this.getLicenses,
+    dashboard_product: this.getProduct,
     test: () => {},
   };
 
@@ -103,7 +108,7 @@ export default class Handler_API {
     this.newAnswer(payload, answer.Data);
   }
 
-  private getDashboard(payload: Payload_API_Call) {
+  private getLicenses(payload: Payload_API_Call) {
     const answer: Payload_API_Answer = {
       Data: [
         {
@@ -179,6 +184,18 @@ export default class Handler_API {
         Message: "Success",
       },
     };
-    this.newAnswer(payload, answer.Data);
+    this.newAnswer(payload, { key_api: payload.key_api, data: answer.Data });
+  }
+
+  private getProduct(payload: Payload_API_Call) {
+    console.log(payload);
+    const answer: Payload_API_Answer = {
+      Data: {},
+      Status: {
+        Code: 0,
+        Message: "Success",
+      },
+    };
+    this.newAnswer(payload, { key_api: payload.key_api, data: answer.Data });
   }
 }

@@ -179,11 +179,19 @@ const map_function: Map_Function = {
               }
             );
         },
-        publish: (payload: Payload_Function_Data) => {
+        publish_licenses: (payload: Payload_Function_Data) => {
           if (payload.handler_event)
             payload.handler_event.publish("api_call", {
-              key_api: "dashboard",
+              key_api: "dashboard_licenses",
               key_call: payload.key_call,
+            });
+        },
+        publish_product: (payload: Payload_Function_Data) => {
+          if (payload.handler_event)
+            payload.handler_event.publish("api_call", {
+              key_api: "dashboard_product",
+              key_call: payload.key_call,
+              data: payload.data,
             });
         },
       },

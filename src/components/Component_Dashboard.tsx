@@ -70,6 +70,7 @@ export const Component_Dashboard = ({
   const [sortDirection, setSortDirection] = useState<Directions>("asc");
   const [preferences, setPreferences] = useState<Data_Preferences>();
   const [columnData, setColumnData] = useState<Data_Column[]>([]);
+  const [panelData, setPanelData] = useState<any[]>([]);
   const [assets, setAssets] = useState<Asset[]>([]);
 
   const handleSortChange = (key_column: string) => {
@@ -104,6 +105,8 @@ export const Component_Dashboard = ({
 
   const parseAPIResults = (result_api: Payload_Result) => {
     {
+      console.log(result_api);
+
       let data_table: Data_Row_Displayed[] = [];
 
       result_api.data.forEach((data_row: Payload_API_Dashboard) => {
@@ -265,6 +268,13 @@ export const Component_Dashboard = ({
 
     const toggleExpansion = () => {
       setIsExpanded(!isExpanded);
+      data.handleLifecycle(row.license_key);
+    };
+
+    const findPanelData = () => {
+      return panelData.filter(
+        (data_row) => data_row.license_key === row.license_key
+      )[0];
     };
 
     return (
@@ -291,14 +301,7 @@ export const Component_Dashboard = ({
           data-component="Component_Dashboard_Row_Panel"
         >
           <div data-component="Component_Dashboard_Row_Panel_Content">
-            {columnData &&
-              columnData.map((column) => (
-                <Component_Dashboard_Row_Item
-                  key={row.license_key + column.key_column}
-                  row={row}
-                  column={column}
-                />
-              ))}
+            {findPanelData()}
           </div>
         </div>
       </div>

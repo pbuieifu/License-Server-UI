@@ -148,7 +148,7 @@
                           "functions": {
                             "mount": [
                               "function.dashboard.api.subscribe",
-                              "function.dashboard.api.publish",
+                              "function.dashboard.api.publish_licenses",
                               "function.dashboard.preferences.subscribe",
                               "function.dashboard.preferences.publish_retrieve",
                               "function.dashboard.assets.subscribe"
@@ -157,6 +157,9 @@
                               "function.dashboard.api.unsubscribe",
                               "function.dashboard.preferences.unsubscribe",
                               "function.dashboard.assets.unsubscribe"
+                            ],
+                            "lifecycle": [
+                              "function.dashboard.api.publish_product"
                             ]
                           },
                           "assets": [
