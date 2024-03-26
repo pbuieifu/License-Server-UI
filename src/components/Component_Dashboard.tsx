@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Asset, Props_Component_Rendered } from "./Component_Generic";
-import { Payload_Result } from "../handler/Handler_Function";
+import Handler_Function, { Payload_Result } from "../handler/Handler_Function";
 import {
   Data_Preferences_Column,
   Data_Preferences,
@@ -28,11 +28,90 @@ interface Data_Column {
 
 interface Component_Dashboard_Header_Item_Props {
   column: Data_Column;
+  sortColumn: string;
+  sortDirection: Directions;
+  handler_function: Handler_Function;
+  assets: Asset[];
+  handleSortChange: (key_column: string) => void;
 }
 
+const Component_Dashboard_Header_Item = ({
+  column,
+  sortColumn,
+  sortDirection,
+  handler_function,
+  assets,
+  handleSortChange,
+}: Component_Dashboard_Header_Item_Props) => {
+  const sortDirectionImageUrl = useMemo(() => {
+    if (sortColumn === column.key_column) {
+      switch (sortDirection) {
+        case "asc":
+          return handler_function.extractAssetURLFromList(assets, "filter_asc");
+        case "desc":
+          return handler_function.extractAssetURLFromList(
+            assets,
+            "filter_desc"
+          );
+        default:
+          return "";
+      }
+    }
+    return handler_function.extractAssetURLFromList(assets, "filter");
+  }, [sortColumn, sortDirection, column.key_column, assets]);
+
+  return (
+    <div
+      style={{ width: `${column.size}` }}
+      data-component="Component_Dashboard_Header_Item"
+    >
+      {column.key_column.charAt(0).toUpperCase() + column.key_column.slice(1)}
+      <button
+        data-component="Component_Dashboard_Header_Button"
+        onClick={() => handleSortChange(column.key_column)}
+      >
+        {sortDirectionImageUrl && (
+          <img src={sortDirectionImageUrl} alt="Sorting Icon" />
+        )}
+      </button>
+    </div>
+  );
+};
+
 interface Component_Dashboard_Header_Props {
-  columns?: Data_Column[];
+  columnData: Data_Column[];
+  sortColumn: string;
+  sortDirection: Directions;
+  handler_function: Handler_Function;
+  assets: Asset[];
+  handleSortChange: (key_column: string) => void;
 }
+
+const Component_Dashboard_Header = ({
+  columnData,
+  sortColumn,
+  sortDirection,
+  handler_function,
+  assets,
+  handleSortChange,
+}: Component_Dashboard_Header_Props) => {
+  return (
+    <div data-component="Component_Dashboard_Header">
+      {columnData &&
+        columnData.map((column) => (
+          <Component_Dashboard_Header_Item
+            key={column.key_column}
+            column={column}
+            sortColumn={sortColumn}
+            sortDirection={sortDirection}
+            handler_function={handler_function}
+            assets={assets}
+            handleSortChange={handleSortChange}
+          />
+        ))}
+    </div>
+  );
+};
 
 interface Component_Dashboard_Row_Item_Props {
   row: Data_Row_Displayed;
@@ -279,67 +358,19 @@ export const Component_Dashboard = ({
     gatherAssets();
   }, [preferences]);
 
-  const Component_Dashboard_Header = ({}: Component_Dashboard_Header_Props) => {
-    return (
-      <div data-component="Component_Dashboard_Header">
-        {columnData &&
-          columnData.map((column) => (
-            <Component_Dashboard_Header_Item
-              key={column.key_column}
-              column={column}
-            />
-          ))}
-      </div>
-    );
-  };
-
-  const Component_Dashboard_Header_Item = ({
-    column,
-  }: Component_Dashboard_Header_Item_Props) => {
-    const sortDirectionImageUrl = useMemo(() => {
-      if (sortColumn === column.key_column) {
-        switch (sortDirection) {
-          case "asc":
-            return data.handler_function.extractAssetURLFromList(
-              assets,
-              "filter_asc"
-            );
-          case "desc":
-            return data.handler_function.extractAssetURLFromList(
-              assets,
-              "filter_desc"
-            );
-          default:
-            return "";
-        }
-      }
-      return data.handler_function.extractAssetURLFromList(assets, "filter");
-    }, [sortColumn, sortDirection, column.key_column, assets]);
-
-    return (
-      <div
-        style={{ width: `${column.size}` }}
-        data-component="Component_Dashboard_Header_Item"
-      >
-        {column.key_column.charAt(0).toUpperCase() + column.key_column.slice(1)}
-        <button
-          data-component="Component_Dashboard_Header_Button"
-          onClick={() => handleSortChange(column.key_column)}
-        >
-          {sortDirectionImageUrl && (
-            <img src={sortDirectionImageUrl} alt="Sorting Icon" />
-          )}
-        </button>
-      </div>
-    );
-  };
-
   return (
     <div
       data-component="Component_Dashboard"
       data-css={data.json.content.css_key}
     >
-      <Component_Dashboard_Header />
+      <Component_Dashboard_Header
+        columnData={columnData}
+        sortColumn={sortColumn}
+        sortDirection={sortDirection}
+        handler_function={data.handler_function}
+        assets={assets}
+        handleSortChange={handleSortChange}
+      />
       <div data-component="Component_Dashboard_Row_Container">
         {sortedData.map((row) => (
           <Component_Dashboard_Row
