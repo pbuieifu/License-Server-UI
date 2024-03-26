@@ -188,14 +188,19 @@ export default class Handler_API {
   }
 
   private getProduct(payload: Payload_API_Call) {
-    const answer: Payload_API_Answer = {
-      Data: { test: "hi" },
-      Status: {
-        Code: 0,
-        Message: "Success",
-      },
-    };
+    if (payload.data) {
+      const answer: Payload_API_Answer = {
+        Data: { test: "hi" },
+        Status: {
+          Code: 0,
+          Message: "Success",
+        },
+      };
 
-    this.newAnswer(payload, { key_api: payload.key_api, data: answer.Data });
+      this.newAnswer(payload, {
+        key_api: payload.key_api,
+        data: { license_key: payload.data, data: answer.Data },
+      });
+    }
   }
 }

@@ -80,7 +80,7 @@ const map_function: Map_Function = {
           payload.handler_event.subscribe(
             "api_answer",
             (data: Payload_Answer) => {
-              if (payload.setResults)
+              if (payload.setResults && payload.key_call === data.key_call)
                 payload.setResults({
                   key_event_subscription: ["api_answer", data.key_call],
                   data: data.data,
@@ -93,7 +93,7 @@ const map_function: Map_Function = {
           payload.handler_event.unsubscribe(
             "api_answer",
             (data: Payload_Answer) => {
-              if (payload.setResults)
+              if (payload.setResults && payload.key_call === data.key_call)
                 payload.setResults({
                   key_event_subscription: ["api_answer", data.key_call],
                   data: data.data,
@@ -158,7 +158,7 @@ const map_function: Map_Function = {
             payload.handler_event.subscribe(
               "api_answer",
               (data: Payload_Answer) => {
-                if (payload.setResults)
+                if (payload.setResults && payload.key_call === data.key_call)
                   payload.setResults({
                     key_event_subscription: ["api_answer", data.key_call],
                     data: data.data,
@@ -171,7 +171,7 @@ const map_function: Map_Function = {
             payload.handler_event.unsubscribe(
               "api_answer",
               (data: Payload_Answer) => {
-                if (payload.setResults)
+                if (payload.setResults && payload.key_call === data.key_call)
                   payload.setResults({
                     key_event_subscription: ["api_answer", data.key_call],
                     data: data.data,
@@ -201,7 +201,7 @@ const map_function: Map_Function = {
             payload.handler_event.subscribe(
               "retrieve_answer",
               (data: Payload_Answer) => {
-                if (payload.setResults)
+                if (payload.setResults && payload.key_call === data.key_call)
                   payload.setResults({
                     key_event_subscription: ["retrieve_answer", data.key_call],
                     data: data.data,
@@ -214,7 +214,7 @@ const map_function: Map_Function = {
             payload.handler_event.unsubscribe(
               "retrieve_answer",
               (data: Payload_Answer) => {
-                if (payload.setResults)
+                if (payload.setResults && payload.key_call === data.key_call)
                   payload.setResults({
                     key_event_subscription: ["retrieve_answer", data.key_call],
                     data: data.data,
@@ -236,7 +236,7 @@ const map_function: Map_Function = {
             payload.handler_event.subscribe(
               "environment_answer",
               (data: Payload_Answer) => {
-                if (payload.setResults)
+                if (payload.setResults && payload.key_call === data.key_call)
                   payload.setResults({
                     key_event_subscription: [
                       "environment_answer",
@@ -252,7 +252,7 @@ const map_function: Map_Function = {
             payload.handler_event.unsubscribe(
               "environment_answer",
               (data: Payload_Answer) => {
-                if (payload.setResults)
+                if (payload.setResults && payload.key_call === data.key_call)
                   payload.setResults({
                     key_event_subscription: [
                       "environment_answer",

@@ -59,7 +59,65 @@ const Component_Dashboard_Row_Item = ({
 
 interface Component_Dashboard_Row_Props {
   row: Data_Row_Displayed;
+  handleLifecycle: (input: any) => void;
+  panelData: any[];
+  columnData: Data_Column[];
 }
+
+const Component_Dashboard_Row = ({
+  row,
+  handleLifecycle,
+  panelData,
+  columnData,
+}: Component_Dashboard_Row_Props) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [contentData, setContentData] = useState<any>();
+
+  const toggleExpansion = () => {
+    setIsExpanded(!isExpanded);
+    handleLifecycle(row.license_key);
+  };
+
+  const panelToContentData = () => {
+    setContentData(
+      panelData.filter(
+        (data_row) => data_row.license_key === row.license_key
+      )[0]
+    );
+  };
+
+  useEffect(() => {
+    panelToContentData();
+    console.log(panelData);
+  }, [panelData]);
+
+  return (
+    <div data-component="Component_Dashboard_Row_Pseudo" key={row.license_key}>
+      <div
+        data-component="Component_Dashboard_Row"
+        onClick={toggleExpansion}
+        style={{ cursor: "pointer" }}
+      >
+        {columnData &&
+          columnData.map((column) => (
+            <Component_Dashboard_Row_Item
+              key={row.license_key + column.key_column}
+              row={row}
+              column={column}
+            />
+          ))}
+      </div>
+      <div
+        className={isExpanded ? "expanded" : ""}
+        data-component="Component_Dashboard_Row_Panel"
+      >
+        <div data-component="Component_Dashboard_Row_Panel_Content">
+          {JSON.stringify(contentData)}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export const Component_Dashboard = ({
   data,
@@ -125,15 +183,17 @@ export const Component_Dashboard = ({
     setTableData(data_table);
   };
 
+  const parseProduct = (data_result: any) =>
+    setPanelData((prevItems) => [...prevItems, data_result]);
+
   const parseAPIResults = (result_api: Payload_Result) => {
     switch (result_api.data.key_api) {
       case "dashboard_licenses":
         parseLicenses(result_api.data.data);
         break;
-      /*       case "dashboard_product":
-        setPanelData((prevItems) => [...prevItems, result_api.data.data]);
-        console.log(result_api.data.data);
-        break; */
+      case "dashboard_product":
+        parseProduct(result_api.data.data);
+        break;
       default:
         console.log(result_api);
         break;
@@ -274,51 +334,6 @@ export const Component_Dashboard = ({
     );
   };
 
-  const Component_Dashboard_Row = ({ row }: Component_Dashboard_Row_Props) => {
-    const [isExpanded, setIsExpanded] = useState(false);
-
-    const toggleExpansion = () => {
-      //data.handleLifecycle(row.license_key);
-      setIsExpanded(!isExpanded);
-    };
-
-    const findPanelData = () => {
-      return panelData.filter(
-        (data_row) => data_row.license_key === row.license_key
-      )[0];
-    };
-
-    return (
-      <div
-        data-component="Component_Dashboard_Row_Pseudo"
-        key={row.license_key}
-      >
-        <div
-          data-component="Component_Dashboard_Row"
-          onClick={toggleExpansion}
-          style={{ cursor: "pointer" }}
-        >
-          {columnData &&
-            columnData.map((column) => (
-              <Component_Dashboard_Row_Item
-                key={row.license_key + column.key_column}
-                row={row}
-                column={column}
-              />
-            ))}
-        </div>
-        <div
-          className={isExpanded ? "expanded" : ""}
-          data-component="Component_Dashboard_Row_Panel"
-        >
-          <div data-component="Component_Dashboard_Row_Panel_Content">
-            {findPanelData()}
-          </div>
-        </div>
-      </div>
-    );
-  };
-
   return (
     <div
       data-component="Component_Dashboard"
@@ -327,7 +342,13 @@ export const Component_Dashboard = ({
       <Component_Dashboard_Header />
       <div data-component="Component_Dashboard_Row_Container">
         {sortedData.map((row) => (
-          <Component_Dashboard_Row key={row.license_key} row={row} />
+          <Component_Dashboard_Row
+            key={row.license_key}
+            row={row}
+            handleLifecycle={data.handleLifecycle}
+            panelData={panelData}
+            columnData={columnData}
+          />
         ))}
       </div>
     </div>
