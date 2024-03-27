@@ -95,10 +95,6 @@ button:hover {
   cursor: grab;
 }
 
-[data-component="Component_Dashboard_Header_Item"]:active {
-  cursor: grabbing;
-}
-
 [data-component="Component_Dashboard_Header_Button"] {
   position: absolute;
   right: 10px;
