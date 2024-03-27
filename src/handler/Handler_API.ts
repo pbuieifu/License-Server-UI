@@ -216,7 +216,7 @@ export default class Handler_API {
 
       this.newAnswer(payload, {
         key_api: payload.key_api,
-        data: { license_key: payload.data, data: answer.Data },
+        data: { license_id: payload.data, data: answer.Data },
       });
     }
   }

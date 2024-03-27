@@ -1,6 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
-import { Asset, Props_Component_Rendered } from "./Component_Generic";
-import { Payload_Result } from "../handler/Handler_Function";
+import {
+  Asset,
+  Payload_Lifecycle_Function_Input,
+  Props_Component_Rendered,
+} from "./Component_Generic";
+import {
+  Payload_Lifecycle_Function,
+  Payload_Result,
+} from "../handler/Handler_Function";
 import {
   Data_Preferences_Column,
   Data_Preferences,
@@ -87,7 +94,7 @@ const Component_Dashboard_Row_Item = ({
 
 interface Props_Component_Dashboard_Row {
   row: Data_Row_Displayed;
-  handleLifecycle: (input: any) => void;
+  handleLifecycle: (data: Payload_Lifecycle_Function_Input) => void;
   panelData: any[];
   columnData: Data_Column[];
 }
@@ -103,7 +110,10 @@ const Component_Dashboard_Row = ({
 
   const toggleExpansion = () => {
     setIsExpanded(!isExpanded);
-    handleLifecycle(row.license_id);
+    handleLifecycle({
+      key_function: "function.dashboard.api.publish_product",
+      input: row.license_id,
+    });
   };
 
   const panelToContentData = () => {

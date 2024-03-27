@@ -57,7 +57,7 @@ export interface Data_Component_Generic {
   };
 }
 
-interface Payload_Lifecycle_Function_Input {
+export interface Payload_Lifecycle_Function_Input {
   key_function?: string;
   input: any;
 }
@@ -120,13 +120,12 @@ const Component_Generic = ({ data }: Props_Component_Generic) => {
           if (
             !data.key_function ||
             func_lifecycle.key_function === data.key_function
-          ) {
+          )
             func_lifecycle.function({
               handler_event: handler_event,
               key_call: key_call,
               data: data.input,
             });
-          }
         });
       },
     });
