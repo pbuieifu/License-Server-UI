@@ -85,8 +85,12 @@ const Component_Generic = ({ data }: Props_Component_Generic) => {
     `${data.key_component}${generateUniqueHash()}`
   ).current;
   const handler_event = Handler_Event.getInstance();
-  const handler_function = new Handler_Function(handler_event, data);
   const [results, setResults] = useState<Payload_Result[]>([]);
+  const handler_function = new Handler_Function(
+    handler_event,
+    data,
+    setResults
+  );
   const [cleanUpFunctions, setCleanUpFunctions] = useState<Payload_Function[]>(
     []
   );
@@ -96,14 +100,12 @@ const Component_Generic = ({ data }: Props_Component_Generic) => {
     handler_function.generateFunctions("mount", {
       handler_event: handler_event,
       key_call: key_call,
-      setResults: setResults,
     });
 
     setCleanUpFunctions(
       handler_function.generateFunctions("unmount", {
         handler_event: handler_event,
         key_call: key_call,
-        setResults: setResults,
       }) as Payload_Function[]
     );
 
@@ -142,10 +144,6 @@ const Component_Generic = ({ data }: Props_Component_Generic) => {
       cleanUp();
     };
   }, []);
-
-  /*   useEffect(() => {
-    if (results.length > 0) console.log(results);
-  }, [results]); */
 
   if (data.enabled && Component_Rendered && componentData) {
     return <Component_Rendered data={componentData} results={results} />;

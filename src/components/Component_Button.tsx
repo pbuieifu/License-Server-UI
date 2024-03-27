@@ -14,7 +14,7 @@ export const Component_Button = ({
     <button
       data-component="Component_Button"
       data-css={data.json.content.css_key}
-      onClick={() => data.handleLifecycle({ input: "" })}
+      onClick={() => data.handleLifecycle({ input: data.json })}
     >
       <Component_Display_HTML html={data.json.content.text} />
     </button>

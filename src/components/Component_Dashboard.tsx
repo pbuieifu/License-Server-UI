@@ -214,42 +214,19 @@ const Component_Sort_Modal = ({
     );
 
   const parseColumns = () => {
-    let data_sort: Data_Preferences_Column[] = [];
-
-    if (preferences?.dashboard.columns) {
-      data_sort = preferences.dashboard.columns;
-    } else {
-      data_sort = columnData.map((column) => ({
-        key_column: column.key_column,
-        direction: "asc",
-        shown: true,
-        sorted: false,
-      }));
-
-      const statusIndex = data_sort.findIndex(
-        (item) => item.key_column === "status"
-      );
-
-      if (statusIndex !== -1) {
-        data_sort[statusIndex].sorted = true;
-
-        const [statusColumn] = data_sort.splice(statusIndex, 1);
-        data_sort.unshift(statusColumn);
-      }
-    }
-
-    setLocalSortCriteria(data_sort);
+    if (preferences?.dashboard.columns)
+      setLocalSortCriteria(preferences?.dashboard.columns);
   };
 
   useEffect(() => {
     parseColumns();
-  }, [columnData]);
+  }, [columnData, preferences]);
 
   return (
-    <div>
+    <>
       {localSortCriteria.map((criterion, index) => (
         <div
-          key={index}
+          key={criterion.key_column}
           draggable
           onDragStart={(e) => handleDragStart(e, index)}
           onDrop={(e) => handleDrop(e, index)}
@@ -291,7 +268,7 @@ const Component_Sort_Modal = ({
         </div>
       ))}
       <button onClick={() => onSave(localSortCriteria)}>Save</button>
-    </div>
+    </>
   );
 };
 
@@ -311,10 +288,15 @@ export const Component_Dashboard = ({
   const updatePrefereces = (criteria_new: Data_Preferences_Column[]) => {
     const preferences_new = JSON.parse(JSON.stringify(preferences));
 
-    preferences_new.dashboard.sorting = criteria_new;
+    preferences_new.dashboard.columns = criteria_new;
 
-    //todo, update preferences
-    return preferences_new;
+    setPreferences(preferences_new);
+    setSortCriteria(criteria_new);
+
+    data.handleLifecycle({
+      key_function: "function.dashboard.publish_preferences_update",
+      input: preferences_new,
+    });
   };
 
   const handleSaveSortCriteria = (criteria_new: Data_Preferences_Column[]) => {
@@ -323,16 +305,22 @@ export const Component_Dashboard = ({
   };
 
   const sortedData = useMemo(() => {
-    const activeCriteria = sortCriteria.filter((criterion) => criterion.sorted);
+    let activeCriteria = preferences?.dashboard.columns.filter(
+      (criterion) => criterion.sorted
+    );
+
+    if (sortCriteria.length > 0)
+      activeCriteria = sortCriteria.filter((criterion) => criterion.sorted);
 
     return [...tableData].sort((a, b) => {
-      for (let criterion of activeCriteria) {
-        if (a[criterion.key_column] < b[criterion.key_column]) {
-          return criterion.direction === "asc" ? -1 : 1;
-        } else if (a[criterion.key_column] > b[criterion.key_column]) {
-          return criterion.direction === "asc" ? 1 : -1;
+      if (activeCriteria)
+        for (let criterion of activeCriteria) {
+          if (a[criterion.key_column] < b[criterion.key_column]) {
+            return criterion.direction === "asc" ? -1 : 1;
+          } else if (a[criterion.key_column] > b[criterion.key_column]) {
+            return criterion.direction === "asc" ? 1 : -1;
+          }
         }
-      }
       return 0;
     });
   }, [tableData, sortCriteria]);
@@ -480,7 +468,7 @@ export const Component_Dashboard = ({
 
   useEffect(() => {
     gatherAssets();
-  }, [preferences]);
+  }, [preferences?.theme]);
 
   return (
     <div

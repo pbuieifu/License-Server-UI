@@ -7,7 +7,7 @@ type Key_Function_Types = "mount" | "unmount" | "lifecycle";
 
 export type Payload_Function = (payload?: Payload_Function_Data) => any;
 
-type Payload_Lifecycle_Function = {
+export type Payload_Lifecycle_Function = {
   key_function: string;
   function: Payload_Function;
 };
@@ -21,7 +21,7 @@ export interface Payload_Function_Data {
   handler_event: Handler_Event;
   key_call: string;
   data?: any;
-  setResults?: (data: any) => void;
+  updateResults?: (data: any) => void;
 }
 
 export interface Payload_Answer {
@@ -32,13 +32,16 @@ export interface Payload_Answer {
 export default class Handler_Function {
   private handler_event: Handler_Event;
   private component_data: Data_Component_Generic;
+  private setResults: (data: any) => void;
 
   public constructor(
     handler_event: Handler_Event,
-    component_data: Data_Component_Generic
+    component_data: Data_Component_Generic,
+    setResults: (data: any) => void
   ) {
     this.handler_event = handler_event;
     this.component_data = component_data;
+    this.setResults = setResults;
   }
 
   private notifyError(error: Payload_Error) {
@@ -93,11 +96,8 @@ export default class Handler_Function {
   }
 
   public cleanResults(payload: Payload_Function_Data, data: Payload_Result) {
-    if (
-      payload.setResults !== undefined &&
-      this.checkValidResult(payload, data)
-    ) {
-      payload.setResults((results_prev: Payload_Result[]) => {
+    if (this.checkValidResult(payload, data)) {
+      this.setResults((results_prev: Payload_Result[]) => {
         // Find all items matching the first key of key_event_subscription
         const matchedItems = results_prev.filter(
           (result) =>
@@ -174,10 +174,9 @@ export default class Handler_Function {
         key_call: payload.key_call,
       };
 
-      if (payload.setResults)
-        payload_function_data.setResults = (data: Payload_Result) => {
-          this.cleanResults(payload, data);
-        };
+      payload_function_data.updateResults = (data: Payload_Result) => {
+        this.cleanResults(payload, data);
+      };
 
       func(payload_function_data);
     });
@@ -197,10 +196,9 @@ export default class Handler_Function {
         key_call: payload.key_call,
       };
 
-      if (payload.setResults)
-        payload_function_data.setResults = (data: Payload_Result) => {
-          this.cleanResults(payload, data);
-        };
+      payload_function_data.updateResults = (data: Payload_Result) => {
+        this.cleanResults(payload, data);
+      };
 
       functions.push(func);
     });
