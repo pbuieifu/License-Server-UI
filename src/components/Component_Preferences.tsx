@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Props_Component_Rendered } from "./Component_Generic";
 import { Payload_Result } from "../handler/Handler_Function";
+import { Directions } from "./Component_Dashboard";
 
 export type Data_Preferences = {
   theme: string;
@@ -11,7 +12,9 @@ export type Data_Preferences = {
 
 export type Data_Preferences_Column = {
   key_column: string;
-  enabled: boolean;
+  shown: boolean;
+  sorted: boolean;
+  direction: Directions;
 };
 
 export const Component_Preferences = ({
@@ -29,7 +32,9 @@ export const Component_Preferences = ({
       );
 
     if (result_api) {
-      data.handleLifecycle({ key_store: "preferences", data: result_api.data });
+      data.handleLifecycle({
+        input: { key_store: "preferences", data: result_api.data },
+      });
       setTheme(result_api.data.theme);
     }
   };

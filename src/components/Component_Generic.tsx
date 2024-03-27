@@ -12,6 +12,7 @@ import { Component_Dashboard } from "./Component_Dashboard";
 import Handler_Event from "../handler/Handler_Event";
 import Handler_Function, {
   Payload_Function,
+  Payload_Lifecycle_Function,
   Payload_Result,
 } from "../handler/Handler_Function";
 import generateUniqueHash from "../helper/generateUniqueHash";
@@ -31,7 +32,7 @@ interface Data_Component_Rendered {
   json: Data_Component_Generic;
   handler_event: Handler_Event;
   handler_function: Handler_Function;
-  handleLifecycle: (input: any) => void;
+  handleLifecycle: (data: Payload_Lifecycle_Function_Input) => void;
 }
 
 export interface Props_Component_Rendered {
@@ -54,6 +55,11 @@ export interface Data_Component_Generic {
     text?: string;
     assets: Asset[];
   };
+}
+
+interface Payload_Lifecycle_Function_Input {
+  key_function?: string;
+  input: any;
 }
 
 const Component_Map: Record<
@@ -98,7 +104,7 @@ const Component_Generic = ({ data }: Props_Component_Generic) => {
         handler_event: handler_event,
         key_call: key_call,
         setResults: setResults,
-      })
+      }) as Payload_Function[]
     );
 
     setComponentData({
@@ -106,17 +112,22 @@ const Component_Generic = ({ data }: Props_Component_Generic) => {
       json: data,
       handler_event: handler_event,
       handler_function: handler_function,
-      handleLifecycle: (input: any) => {
-        handler_function.generateFunctions("lifecycle").forEach((func) =>
-          func({
-            handler_event: handler_event,
-            key_call: func({
+      handleLifecycle: (data: Payload_Lifecycle_Function_Input) => {
+        handler_function.generateFunctions("lifecycle").forEach((func) => {
+          const func_lifecycle: Payload_Lifecycle_Function =
+            func as Payload_Lifecycle_Function;
+
+          if (
+            !data.key_function ||
+            func_lifecycle.key_function === data.key_function
+          ) {
+            func_lifecycle.function({
               handler_event: handler_event,
               key_call: key_call,
-              data: input,
-            }),
-          })
-        );
+              data: data.input,
+            });
+          }
+        });
       },
     });
   };

@@ -7,6 +7,11 @@ type Key_Function_Types = "mount" | "unmount" | "lifecycle";
 
 export type Payload_Function = (payload?: Payload_Function_Data) => any;
 
+type Payload_Lifecycle_Function = {
+  key_function: string;
+  function: Payload_Function;
+};
+
 export interface Payload_Result {
   key_event_subscription: [Key_Events, string];
   data: any;
@@ -203,11 +208,13 @@ export default class Handler_Function {
     return functions;
   }
 
-  private generateLifecycles(keys_function: string[]): Payload_Function[] {
-    let functions: Payload_Function[] = [];
+  private generateLifecycles(
+    keys_function: string[]
+  ): Payload_Lifecycle_Function[] {
+    let functions: Payload_Lifecycle_Function[] = [];
     keys_function.map((key_function: string) => {
       const func = this.getFunction(key_function);
-      functions.push(func);
+      functions.push({ key_function: key_function, function: func });
     });
 
     return functions;
@@ -216,7 +223,7 @@ export default class Handler_Function {
   public generateFunctions(
     key: Key_Function_Types,
     payload?: Payload_Function_Data
-  ): Payload_Function[] {
+  ): Payload_Function[] | Payload_Lifecycle_Function[] {
     if (this.component_data.content.functions)
       switch (key) {
         case "mount":

@@ -7,18 +7,17 @@ import {
 } from "./Component_Preferences";
 import jsonEqual from "../helper/jsonEqual";
 
-type Directions = "asc" | "desc" | "none";
+export type Directions = "asc" | "desc" | "none";
 
 export interface Payload_API_Dashboard {
   ClientName: string;
   ProductName: string;
-  License: string;
-  MaxDeployments: number;
-  CurrentDeployments: number;
+  ProductVersion: string;
+  LicenseID: string;
   Enabled: boolean;
   AgreementAccepted: boolean;
-  Expired: boolean;
-  InGracePeriod: boolean;
+  ExpirationDate: number;
+  GracePeriod: number;
 }
 
 interface Data_Column {
@@ -104,14 +103,12 @@ const Component_Dashboard_Row = ({
 
   const toggleExpansion = () => {
     setIsExpanded(!isExpanded);
-    handleLifecycle(row.license_key);
+    handleLifecycle(row.license_id);
   };
 
   const panelToContentData = () => {
     setContentData(
-      panelData.filter(
-        (data_row) => data_row.license_key === row.license_key
-      )[0]
+      panelData.filter((data_row) => data_row.license_id === row.license_id)[0]
     );
   };
 
@@ -123,17 +120,13 @@ const Component_Dashboard_Row = ({
     <div
       data-component="Component_Dashboard_Row_Pseudo"
       data-level={row.status}
-      key={row.license_key}
+      key={row.license_id}
     >
-      <div
-        data-component="Component_Dashboard_Row"
-        onClick={toggleExpansion}
-        style={{ cursor: "pointer" }}
-      >
+      <div data-component="Component_Dashboard_Row" onClick={toggleExpansion}>
         {columnData &&
           columnData.map((column) => (
             <Component_Dashboard_Row_Item
-              key={row.license_key + column.key_column}
+              key={row.license_id + column.key_column}
               row={row}
               column={column}
             />
@@ -151,23 +144,19 @@ const Component_Dashboard_Row = ({
   );
 };
 
-interface Data_Sort_Criteria {
-  key_column: string;
-  direction: Directions;
-  enabled: boolean;
-}
-
 interface Props_Component_Sort_Modal {
   columnData: Data_Column[];
-  onSave: (criteria: Data_Sort_Criteria[]) => void;
+  preferences: Data_Preferences | undefined;
+  onSave: (criteria: Data_Preferences_Column[]) => void;
 }
 
 const Component_Sort_Modal = ({
   columnData,
+  preferences,
   onSave,
 }: Props_Component_Sort_Modal) => {
   const [localSortCriteria, setLocalSortCriteria] = useState<
-    Data_Sort_Criteria[]
+    Data_Preferences_Column[]
   >([]);
 
   const handleDragStart = (
@@ -189,14 +178,14 @@ const Component_Sort_Modal = ({
     setLocalSortCriteria((current) => {
       const item = current[sourceIndex];
       const updatedList = [...current];
-      updatedList.splice(sourceIndex, 1); // Remove item from its original position
-      updatedList.splice(targetIndex, 0, item); // Insert item in its new position
+      updatedList.splice(sourceIndex, 1);
+      updatedList.splice(targetIndex, 0, item);
       return updatedList;
     });
   };
 
   const handleDragOver = (e: { preventDefault: () => void }) => {
-    e.preventDefault(); // Necessary to allow dropping
+    e.preventDefault();
   };
 
   const updateSortCriterion = (index: number, direction: Directions) => {
@@ -208,17 +197,31 @@ const Component_Sort_Modal = ({
   };
 
   const parseColumns = () => {
-    let data_sort: any[] = [];
+    let data_sort: Data_Preferences_Column[] = [];
 
-    columnData.map((column) =>
-      data_sort.push({
+    if (preferences?.dashboard.columns) {
+      data_sort = preferences.dashboard.columns;
+    } else {
+      data_sort = columnData.map((column) => ({
         key_column: column.key_column,
         direction: "asc",
-        enabled: false,
-      })
-    );
+        shown: true,
+        sorted: false,
+      }));
 
-    if (data_sort.length > 0) setLocalSortCriteria(data_sort);
+      const statusIndex = data_sort.findIndex(
+        (item) => item.key_column === "status"
+      );
+
+      if (statusIndex !== -1) {
+        data_sort[statusIndex].sorted = true;
+
+        const [statusColumn] = data_sort.splice(statusIndex, 1);
+        data_sort.unshift(statusColumn);
+      }
+    }
+
+    setLocalSortCriteria(data_sort);
   };
 
   useEffect(() => {
@@ -243,11 +246,11 @@ const Component_Sort_Modal = ({
         >
           <input
             type="checkbox"
-            checked={criterion.enabled}
+            checked={criterion.sorted}
             onChange={() =>
               setLocalSortCriteria((current) =>
                 current.map((item, i) =>
-                  i === index ? { ...item, enabled: !item.enabled } : item
+                  i === index ? { ...item, enabled: !item.sorted } : item
                 )
               )
             }
@@ -255,7 +258,7 @@ const Component_Sort_Modal = ({
           <span>{criterion.key_column}</span>
           <button
             onClick={() => updateSortCriterion(index, "asc")}
-            disabled={!criterion.enabled}
+            disabled={!criterion.sorted}
             style={{
               background: criterion.direction === "asc" ? "#4CAF50" : "#f1f1f1",
               color: criterion.direction === "asc" ? "white" : "black",
@@ -265,7 +268,7 @@ const Component_Sort_Modal = ({
           </button>
           <button
             onClick={() => updateSortCriterion(index, "desc")}
-            disabled={!criterion.enabled}
+            disabled={!criterion.sorted}
             style={{
               background:
                 criterion.direction === "desc" ? "#f44336" : "#f1f1f1",
@@ -290,17 +293,26 @@ export const Component_Dashboard = ({
   const [columnData, setColumnData] = useState<Data_Column[]>([]);
   const [panelData, setPanelData] = useState<any[]>([]);
   const [assets, setAssets] = useState<Asset[]>([]);
-  const [sortCriteria, setSortCriteria] = useState<Data_Sort_Criteria[]>([]);
+  const [sortCriteria, setSortCriteria] = useState<Data_Preferences_Column[]>(
+    []
+  );
 
-  const handleSaveSortCriteria = (newCriteria: Data_Sort_Criteria[]) => {
-    setSortCriteria(newCriteria);
+  const updatePrefereces = (criteria_new: Data_Preferences_Column[]) => {
+    const preferences_new = JSON.parse(JSON.stringify(preferences));
+
+    preferences_new.dashboard.sorting = criteria_new;
+
+    //todo, update preferences
+    return preferences_new;
+  };
+
+  const handleSaveSortCriteria = (criteria_new: Data_Preferences_Column[]) => {
+    setSortCriteria(criteria_new);
+    updatePrefereces(criteria_new);
   };
 
   const sortedData = useMemo(() => {
-    // Filter for only enabled criteria
-    const activeCriteria = sortCriteria.filter(
-      (criterion) => criterion.enabled
-    );
+    const activeCriteria = sortCriteria.filter((criterion) => criterion.sorted);
 
     return [...tableData].sort((a, b) => {
       for (let criterion of activeCriteria) {
@@ -312,7 +324,7 @@ export const Component_Dashboard = ({
       }
       return 0;
     });
-  }, [tableData, sortCriteria]); // Notice the dependency is on sortCriteria now
+  }, [tableData, sortCriteria]);
 
   const checkUpdatedPreferences = (result_preferences: Payload_Result) => {
     return (
@@ -321,11 +333,28 @@ export const Component_Dashboard = ({
   };
 
   const determineStatus = (data_row: Payload_API_Dashboard) => {
-    if (data_row.Enabled && !data_row.InGracePeriod) return "0Red";
+    const now = Math.floor(Date.now() / 1000);
 
-    if (data_row.Enabled && data_row.InGracePeriod) return "1Orange";
+    const isExpired = now > data_row.ExpirationDate;
+
+    const inGracePeriod =
+      now < data_row.ExpirationDate + data_row.GracePeriod * 24 * 60 * 60;
+
+    if (data_row.Enabled && isExpired && !inGracePeriod) return "0Red";
+
+    if (data_row.Enabled && isExpired && inGracePeriod) return "1Orange";
 
     return "3Green";
+  };
+
+  const determineActions = (data_row: Payload_API_Dashboard) => {
+    const now = Math.floor(Date.now() / 1000);
+
+    const isExpired = now > data_row.ExpirationDate;
+
+    if (data_row.AgreementAccepted || !isExpired) return "No";
+
+    return "Yes";
   };
 
   const parseLicenses = (data_result: Payload_API_Dashboard[]) => {
@@ -333,15 +362,11 @@ export const Component_Dashboard = ({
 
     data_result.forEach((data_row: Payload_API_Dashboard) => {
       let row_display: Data_Row_Displayed = {
-        license_key: data_row.License,
+        license_id: data_row.LicenseID,
         client_name: data_row.ClientName,
         product_name: data_row.ProductName,
         status: determineStatus(data_row),
-        action_required:
-          data_row.AgreementAccepted &&
-          !(data_row.InGracePeriod || data_row.Expired)
-            ? "No"
-            : "Yes",
+        action_required: determineActions(data_row),
       };
 
       data_table.push(row_display);
@@ -373,7 +398,7 @@ export const Component_Dashboard = ({
     if (checkUpdatedPreferences(result_preferences)) {
       result_preferences.data.dashboard.columns.map(
         (column: Data_Preferences_Column) => {
-          if (column.enabled)
+          if (column.shown)
             columns.push({ size: "", key_column: column.key_column });
         }
       );
@@ -453,13 +478,14 @@ export const Component_Dashboard = ({
     >
       <Component_Sort_Modal
         columnData={columnData}
+        preferences={preferences}
         onSave={handleSaveSortCriteria}
       />
       <Component_Dashboard_Header columnData={columnData} />
       <div data-component="Component_Dashboard_Row_Container">
         {sortedData.map((row) => (
           <Component_Dashboard_Row
-            key={row.license_key}
+            key={row.license_id}
             row={row}
             handleLifecycle={data.handleLifecycle}
             panelData={panelData}
