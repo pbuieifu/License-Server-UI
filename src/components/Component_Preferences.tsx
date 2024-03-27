@@ -15,6 +15,7 @@ export type Data_Preferences_Column = {
   shown: boolean;
   sorted: boolean;
   direction: Directions;
+  row_order: number;
 };
 
 export const Component_Preferences = ({

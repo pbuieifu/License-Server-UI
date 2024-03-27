@@ -149,10 +149,20 @@ export default class Handler_Function {
       );
 
       const resultWithKeyCall = filteredByKeyEvent.find(
-        (result) => result.key_event_subscription[1] === key_call
+        (result) =>
+          result.key_event_subscription.length > 1 &&
+          result.key_event_subscription[1] === key_call
       );
 
-      return resultWithKeyCall;
+      if (resultWithKeyCall) {
+        const updatedResults = results.filter(
+          (result) => result !== resultWithKeyCall
+        );
+
+        this.setResults(updatedResults);
+
+        return resultWithKeyCall;
+      }
     }
   }
 

@@ -24,9 +24,8 @@ export interface Payload_API_Dashboard {
   GracePeriod: number;
 }
 
-interface Data_Column {
+interface Data_Column extends Data_Preferences_Column {
   size: string;
-  key_column: string;
 }
 
 interface Props_Component_Dashboard_Header_Item {
@@ -37,31 +36,81 @@ const Component_Dashboard_Header_Item = ({
   column,
 }: Props_Component_Dashboard_Header_Item) => {
   return (
-    <div
-      style={{ width: `${column.size}` }}
-      data-component="Component_Dashboard_Header_Item"
-    >
+    <>
       {column.key_column.charAt(0).toUpperCase() + column.key_column.slice(1)}
-    </div>
+    </>
   );
 };
 
 interface Props_Component_Dashboard_Header {
   columnData: Data_Column[];
+  onColumnOrderChange: (newColumnData: Data_Column[]) => void;
 }
 
 const Component_Dashboard_Header = ({
   columnData,
+  onColumnOrderChange,
 }: Props_Component_Dashboard_Header) => {
+  const handleDragStart =
+    (startIndex: number) => (event: React.DragEvent<HTMLDivElement>) => {
+      event.dataTransfer.effectAllowed = "move";
+      event.dataTransfer.setData("startIndex", startIndex.toString());
+    };
+
+  const handleDrop =
+    (dropIndex: number) => (event: React.DragEvent<HTMLDivElement>) => {
+      event.preventDefault();
+      const startIndex = parseInt(event.dataTransfer.getData("startIndex"), 10);
+
+      if (startIndex === dropIndex || isNaN(startIndex)) return;
+
+      let newColumnData = JSON.parse(JSON.stringify(sortedColumnData));
+
+      const temp = newColumnData[startIndex].row_order;
+      newColumnData[startIndex].row_order = newColumnData[dropIndex].row_order;
+      newColumnData[dropIndex].row_order = temp;
+
+      let rowOrderMap = newColumnData.reduce(
+        (acc: { [x: string]: any }, current: Data_Column) => {
+          acc[current.key_column] = current.row_order;
+          return acc;
+        },
+        {}
+      );
+
+      let updatedSortedColumnData = columnData.map((column) => {
+        if (rowOrderMap[column.key_column] !== undefined) {
+          return { ...column, row_order: rowOrderMap[column.key_column] };
+        }
+        return column;
+      });
+
+      onColumnOrderChange(updatedSortedColumnData);
+    };
+
+  const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+  };
+
+  const sortedColumnData = useMemo(() => {
+    return [...columnData].sort((a, b) => a.row_order - b.row_order);
+  }, [columnData]);
+
   return (
     <div data-component="Component_Dashboard_Header">
-      {columnData &&
-        columnData.map((column) => (
-          <Component_Dashboard_Header_Item
-            key={column.key_column}
-            column={column}
-          />
-        ))}
+      {sortedColumnData.map((column, index) => (
+        <div
+          key={column.key_column}
+          draggable
+          onDragStart={handleDragStart(index)}
+          onDragOver={handleDragOver}
+          onDrop={handleDrop(index)}
+          style={{ cursor: "grab", width: `${column.size}` }}
+          data-component="Component_Dashboard_Header_Item"
+        >
+          <Component_Dashboard_Header_Item column={column} />
+        </div>
+      ))}
     </div>
   );
 };
@@ -123,6 +172,11 @@ const Component_Dashboard_Row = ({
     panelToContentData();
   }, [panelData]);
 
+  const sortedColumnData = useMemo(
+    () => [...columnData].sort((a, b) => a.row_order - b.row_order),
+    [columnData]
+  );
+
   return (
     <div
       data-component="Component_Dashboard_Row_Pseudo"
@@ -130,14 +184,13 @@ const Component_Dashboard_Row = ({
       key={row.license_id}
     >
       <div data-component="Component_Dashboard_Row" onClick={toggleExpansion}>
-        {columnData &&
-          columnData.map((column) => (
-            <Component_Dashboard_Row_Item
-              key={row.license_id + column.key_column}
-              row={row}
-              column={column}
-            />
-          ))}
+        {sortedColumnData.map((column) => (
+          <Component_Dashboard_Row_Item
+            key={row.license_id + column.key_column}
+            row={row}
+            column={column}
+          />
+        ))}
       </div>
       <div
         className={isExpanded ? "expanded" : ""}
@@ -223,7 +276,7 @@ const Component_Sort_Modal = ({
   }, [columnData, preferences]);
 
   return (
-    <>
+    <div data-component="Component_Dashboard_Sort_Modal">
       {localSortCriteria.map((criterion, index) => (
         <div
           key={criterion.key_column}
@@ -268,7 +321,7 @@ const Component_Sort_Modal = ({
         </div>
       ))}
       <button onClick={() => onSave(localSortCriteria)}>Save</button>
-    </>
+    </div>
   );
 };
 
@@ -278,6 +331,7 @@ export const Component_Dashboard = ({
 }: Props_Component_Rendered) => {
   const [tableData, setTableData] = useState<Data_Row_Displayed[]>([]);
   const [preferences, setPreferences] = useState<Data_Preferences>();
+  const [showSortModal, setShowSortModal] = useState<boolean>(false);
   const [columnData, setColumnData] = useState<Data_Column[]>([]);
   const [panelData, setPanelData] = useState<any[]>([]);
   const [assets, setAssets] = useState<Asset[]>([]);
@@ -302,6 +356,15 @@ export const Component_Dashboard = ({
   const handleSaveSortCriteria = (criteria_new: Data_Preferences_Column[]) => {
     setSortCriteria(criteria_new);
     updatePrefereces(criteria_new);
+  };
+
+  const onColumnOrderChange = (criteria_new: Data_Column[]) => {
+    setColumnData(criteria_new);
+    updatePrefereces(criteria_new);
+  };
+
+  const handleShowSortModal = () => {
+    setShowSortModal((prev) => !prev);
   };
 
   const sortedData = useMemo(() => {
@@ -397,8 +460,7 @@ export const Component_Dashboard = ({
     if (checkUpdatedPreferences(result_preferences)) {
       result_preferences.data.dashboard.columns.map(
         (column: Data_Preferences_Column) => {
-          if (column.shown)
-            columns.push({ size: "", key_column: column.key_column });
+          if (column.shown) columns.push({ ...column, size: "" });
         }
       );
 
@@ -471,27 +533,40 @@ export const Component_Dashboard = ({
   }, [preferences?.theme]);
 
   return (
-    <div
-      data-component="Component_Dashboard"
-      data-css={data.json.content.css_key}
-    >
-      <Component_Sort_Modal
-        columnData={columnData}
-        preferences={preferences}
-        onSave={handleSaveSortCriteria}
-      />
-      <Component_Dashboard_Header columnData={columnData} />
-      <div data-component="Component_Dashboard_Row_Container">
-        {sortedData.map((row) => (
-          <Component_Dashboard_Row
-            key={row.license_id}
-            row={row}
-            handleLifecycle={data.handleLifecycle}
-            panelData={panelData}
-            columnData={columnData}
-          />
-        ))}
+    <>
+      {showSortModal && (
+        <Component_Sort_Modal
+          columnData={columnData}
+          preferences={preferences}
+          onSave={handleSaveSortCriteria}
+        />
+      )}
+      <div
+        data-component="Component_Dashboard"
+        data-css={data.json.content.css_key}
+      >
+        <button
+          data-component="Component_Dashboard_Show_Sort_Modal_Button"
+          onClick={handleShowSortModal}
+        >
+          sort
+        </button>
+        <Component_Dashboard_Header
+          columnData={columnData}
+          onColumnOrderChange={onColumnOrderChange}
+        />
+        <div data-component="Component_Dashboard_Row_Container">
+          {sortedData.map((row) => (
+            <Component_Dashboard_Row
+              key={row.license_id}
+              row={row}
+              handleLifecycle={data.handleLifecycle}
+              panelData={panelData}
+              columnData={columnData}
+            />
+          ))}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
