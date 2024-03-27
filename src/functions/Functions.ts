@@ -76,7 +76,7 @@ const map_function: Map_Function = {
     },
     preferences: {
       subscribe: (payload: Payload_Function_Data) => {
-        if (payload.handler_event)
+        if (payload.handler_event) {
           payload.handler_event.subscribe(
             "api_answer",
             (data: Payload_Answer) => {
@@ -87,9 +87,21 @@ const map_function: Map_Function = {
                 });
             }
           );
+
+          payload.handler_event.subscribe(
+            "preferences_update",
+            (data: Payload_Answer) => {
+              if (payload.setResults && payload.key_call === data.key_call)
+                payload.setResults({
+                  key_event_subscription: ["preferences_update", data.key_call],
+                  data: data.data,
+                });
+            }
+          );
+        }
       },
       unsubscribe: (payload: Payload_Function_Data) => {
-        if (payload.handler_event)
+        if (payload.handler_event) {
           payload.handler_event.unsubscribe(
             "api_answer",
             (data: Payload_Answer) => {
@@ -100,6 +112,18 @@ const map_function: Map_Function = {
                 });
             }
           );
+
+          payload.handler_event.unsubscribe(
+            "preferences_update",
+            (data: Payload_Answer) => {
+              if (payload.setResults && payload.key_call === data.key_call)
+                payload.setResults({
+                  key_event_subscription: ["preferences_update", data.key_call],
+                  data: data.data,
+                });
+            }
+          );
+        }
       },
       publish_api: (payload: Payload_Function_Data) => {
         if (payload.handler_event)
@@ -152,117 +176,104 @@ const map_function: Map_Function = {
       },
     },
     dashboard: {
-      api: {
-        subscribe: (payload: Payload_Function_Data) => {
-          if (payload.handler_event)
-            payload.handler_event.subscribe(
-              "api_answer",
-              (data: Payload_Answer) => {
-                if (payload.setResults && payload.key_call === data.key_call)
-                  payload.setResults({
-                    key_event_subscription: ["api_answer", data.key_call],
-                    data: data.data,
-                  });
-              }
-            );
-        },
-        unsubscribe: (payload: Payload_Function_Data) => {
-          if (payload.handler_event)
-            payload.handler_event.unsubscribe(
-              "api_answer",
-              (data: Payload_Answer) => {
-                if (payload.setResults && payload.key_call === data.key_call)
-                  payload.setResults({
-                    key_event_subscription: ["api_answer", data.key_call],
-                    data: data.data,
-                  });
-              }
-            );
-        },
-        publish_licenses: (payload: Payload_Function_Data) => {
-          if (payload.handler_event)
-            payload.handler_event.publish("api_call", {
-              key_api: "dashboard_licenses",
-              key_call: payload.key_call,
-            });
-        },
-        publish_product: (payload: Payload_Function_Data) => {
-          if (payload.handler_event)
-            payload.handler_event.publish("api_call", {
-              key_api: "dashboard_product",
-              key_call: payload.key_call,
-              data: payload.data,
-            });
-        },
+      subscribe: (payload: Payload_Function_Data) => {
+        if (payload.handler_event) {
+          payload.handler_event.subscribe(
+            "api_answer",
+            (data: Payload_Answer) => {
+              if (payload.setResults && payload.key_call === data.key_call)
+                payload.setResults({
+                  key_event_subscription: ["api_answer", data.key_call],
+                  data: data.data,
+                });
+            }
+          );
+
+          payload.handler_event.subscribe(
+            "retrieve_answer",
+            (data: Payload_Answer) => {
+              if (payload.setResults && payload.key_call === data.key_call)
+                payload.setResults({
+                  key_event_subscription: ["retrieve_answer", data.key_call],
+                  data: data.data,
+                });
+            }
+          );
+
+          payload.handler_event.subscribe(
+            "environment_answer",
+            (data: Payload_Answer) => {
+              if (payload.setResults && payload.key_call === data.key_call)
+                payload.setResults({
+                  key_event_subscription: ["environment_answer", data.key_call],
+                  data: data.data,
+                });
+            }
+          );
+        }
       },
-      preferences: {
-        subscribe: (payload: Payload_Function_Data) => {
-          if (payload.handler_event)
-            payload.handler_event.subscribe(
-              "retrieve_answer",
-              (data: Payload_Answer) => {
-                if (payload.setResults && payload.key_call === data.key_call)
-                  payload.setResults({
-                    key_event_subscription: ["retrieve_answer", data.key_call],
-                    data: data.data,
-                  });
-              }
-            );
-        },
-        unsubscribe: (payload: Payload_Function_Data) => {
-          if (payload.handler_event)
-            payload.handler_event.unsubscribe(
-              "retrieve_answer",
-              (data: Payload_Answer) => {
-                if (payload.setResults && payload.key_call === data.key_call)
-                  payload.setResults({
-                    key_event_subscription: ["retrieve_answer", data.key_call],
-                    data: data.data,
-                  });
-              }
-            );
-        },
-        publish_retrieve: (payload: Payload_Function_Data) => {
-          if (payload.handler_event)
-            payload.handler_event.publish("retrieve_call", {
-              key_retrieve: "preferences",
-              key_call: payload.key_call,
-            });
-        },
+      unsubscribe: (payload: Payload_Function_Data) => {
+        if (payload.handler_event) {
+          payload.handler_event.unsubscribe(
+            "api_answer",
+            (data: Payload_Answer) => {
+              if (payload.setResults && payload.key_call === data.key_call)
+                payload.setResults({
+                  key_event_subscription: ["api_answer", data.key_call],
+                  data: data.data,
+                });
+            }
+          );
+          payload.handler_event.unsubscribe(
+            "retrieve_answer",
+            (data: Payload_Answer) => {
+              if (payload.setResults && payload.key_call === data.key_call)
+                payload.setResults({
+                  key_event_subscription: ["retrieve_answer", data.key_call],
+                  data: data.data,
+                });
+            }
+          );
+          payload.handler_event.unsubscribe(
+            "environment_answer",
+            (data: Payload_Answer) => {
+              if (payload.setResults && payload.key_call === data.key_call)
+                payload.setResults({
+                  key_event_subscription: ["environment_answer", data.key_call],
+                  data: data.data,
+                });
+            }
+          );
+        }
       },
-      assets: {
-        subscribe: (payload: Payload_Function_Data) => {
-          if (payload.handler_event)
-            payload.handler_event.subscribe(
-              "environment_answer",
-              (data: Payload_Answer) => {
-                if (payload.setResults && payload.key_call === data.key_call)
-                  payload.setResults({
-                    key_event_subscription: [
-                      "environment_answer",
-                      data.key_call,
-                    ],
-                    data: data.data,
-                  });
-              }
-            );
-        },
-        unsubscribe: (payload: Payload_Function_Data) => {
-          if (payload.handler_event)
-            payload.handler_event.unsubscribe(
-              "environment_answer",
-              (data: Payload_Answer) => {
-                if (payload.setResults && payload.key_call === data.key_call)
-                  payload.setResults({
-                    key_event_subscription: [
-                      "environment_answer",
-                      data.key_call,
-                    ],
-                    data: data.data,
-                  });
-              }
-            );
-        },
+      publish_api_licenses: (payload: Payload_Function_Data) => {
+        if (payload.handler_event)
+          payload.handler_event.publish("api_call", {
+            key_api: "dashboard_licenses",
+            key_call: payload.key_call,
+          });
+      },
+      publish_api_product: (payload: Payload_Function_Data) => {
+        if (payload.handler_event)
+          payload.handler_event.publish("api_call", {
+            key_api: "dashboard_product",
+            key_call: payload.key_call,
+            data: payload.data,
+          });
+      },
+      publish_preferences_retrieve: (payload: Payload_Function_Data) => {
+        if (payload.handler_event)
+          payload.handler_event.publish("retrieve_call", {
+            key_retrieve: "preferences",
+            key_call: payload.key_call,
+          });
+      },
+      publish_preferences_update: (payload: Payload_Function_Data) => {
+        if (payload.handler_event)
+          payload.handler_event.publish("retrieve_call", {
+            key_retrieve: "preferences",
+            key_call: payload.key_call,
+          });
       },
     },
   },

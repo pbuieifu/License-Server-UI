@@ -12,6 +12,7 @@ export type Key_Events =
   | "test_log"
   | "environment_call"
   | "environment_answer"
+  | "preferences_update"
   | "api_call"
   | "api_answer";
 

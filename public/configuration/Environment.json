@@ -147,19 +147,14 @@
                         "content": {
                           "functions": {
                             "mount": [
-                              "function.dashboard.api.subscribe",
-                              "function.dashboard.api.publish_licenses",
-                              "function.dashboard.preferences.subscribe",
-                              "function.dashboard.preferences.publish_retrieve",
-                              "function.dashboard.assets.subscribe"
+                              "function.dashboard.subscribe",
+                              "function.dashboard.publish_api_licenses",
+                              "function.dashboard.publish_preferences_retrieve"
                             ],
-                            "unmount": [
-                              "function.dashboard.api.unsubscribe",
-                              "function.dashboard.preferences.unsubscribe",
-                              "function.dashboard.assets.unsubscribe"
-                            ],
+                            "unmount": ["function.dashboard.unsubscribe"],
                             "lifecycle": [
-                              "function.dashboard.api.publish_product"
+                              "function.dashboard.publish_api_product",
+                              "function.dashboard.publish_preferences_update"
                             ]
                           },
                           "assets": [

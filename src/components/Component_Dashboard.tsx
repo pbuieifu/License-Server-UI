@@ -4,10 +4,7 @@ import {
   Payload_Lifecycle_Function_Input,
   Props_Component_Rendered,
 } from "./Component_Generic";
-import {
-  Payload_Lifecycle_Function,
-  Payload_Result,
-} from "../handler/Handler_Function";
+import { Payload_Result } from "../handler/Handler_Function";
 import {
   Data_Preferences_Column,
   Data_Preferences,
@@ -111,7 +108,7 @@ const Component_Dashboard_Row = ({
   const toggleExpansion = () => {
     setIsExpanded(!isExpanded);
     handleLifecycle({
-      key_function: "function.dashboard.api.publish_product",
+      key_function: "function.dashboard.publish_api_product",
       input: row.license_id,
     });
   };
@@ -198,13 +195,23 @@ const Component_Sort_Modal = ({
     e.preventDefault();
   };
 
-  const updateSortCriterion = (index: number, direction: Directions) => {
+  const updateSortCriterionDirection = (
+    index: number,
+    direction: Directions
+  ) => {
     setLocalSortCriteria((current) =>
       current.map((criterion, i) =>
         i === index ? { ...criterion, direction } : criterion
       )
     );
   };
+
+  const updateSortCriterionState = (index: number) =>
+    setLocalSortCriteria((current) =>
+      current.map((item, i) =>
+        i === index ? { ...item, sorted: !item.sorted } : item
+      )
+    );
 
   const parseColumns = () => {
     let data_sort: Data_Preferences_Column[] = [];
@@ -257,17 +264,11 @@ const Component_Sort_Modal = ({
           <input
             type="checkbox"
             checked={criterion.sorted}
-            onChange={() =>
-              setLocalSortCriteria((current) =>
-                current.map((item, i) =>
-                  i === index ? { ...item, enabled: !item.sorted } : item
-                )
-              )
-            }
+            onChange={() => updateSortCriterionState(index)}
           />
           <span>{criterion.key_column}</span>
           <button
-            onClick={() => updateSortCriterion(index, "asc")}
+            onClick={() => updateSortCriterionDirection(index, "asc")}
             disabled={!criterion.sorted}
             style={{
               background: criterion.direction === "asc" ? "#4CAF50" : "#f1f1f1",
@@ -277,7 +278,7 @@ const Component_Sort_Modal = ({
             Asc
           </button>
           <button
-            onClick={() => updateSortCriterion(index, "desc")}
+            onClick={() => updateSortCriterionDirection(index, "desc")}
             disabled={!criterion.sorted}
             style={{
               background:
@@ -427,7 +428,7 @@ export const Component_Dashboard = ({
   const parseAssetsResults = (result_assets: Payload_Result) =>
     setAssets(result_assets.data);
 
-  const gatherData = () => {
+  const parseResults = () => {
     const result_api: Payload_Result =
       data.handler_function.extractDataFromResult(
         "api_answer",
@@ -457,7 +458,7 @@ export const Component_Dashboard = ({
   };
 
   useEffect(() => {
-    gatherData();
+    parseResults();
   }, [results]);
 
   const gatherAssets = () => {

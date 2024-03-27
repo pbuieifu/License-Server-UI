@@ -23,7 +23,14 @@ export const Component_Preferences = ({
 }: Props_Component_Rendered) => {
   const [theme, setTheme] = useState<string>();
 
-  const storePreferences = () => {
+  const storePreferences = (result_api: Payload_Result) => {
+    data.handleLifecycle({
+      input: { key_store: "preferences", data: result_api.data },
+    });
+    setTheme(result_api.data.theme);
+  };
+
+  const parseResults = () => {
     const result_api: Payload_Result =
       data.handler_function.extractDataFromResult(
         "api_answer",
@@ -31,16 +38,20 @@ export const Component_Preferences = ({
         results
       );
 
-    if (result_api) {
-      data.handleLifecycle({
-        input: { key_store: "preferences", data: result_api.data },
-      });
-      setTheme(result_api.data.theme);
-    }
+    if (result_api) storePreferences(result_api);
+
+    const result_preferences: Payload_Result =
+      data.handler_function.extractDataFromResult(
+        "preferences_update",
+        data.key_call,
+        results
+      );
+
+    if (result_preferences) storePreferences(result_preferences);
   };
 
   useEffect(() => {
-    storePreferences();
+    parseResults();
   }, [results]);
 
   return (
