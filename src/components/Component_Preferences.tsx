@@ -10,7 +10,7 @@ export type Data_Preferences = {
   };
 };
 
-export type Data_Preferences_Column = {
+export interface Data_Preferences_Column  {
   key_column: string;
   shown: boolean;
   sorted: boolean;
